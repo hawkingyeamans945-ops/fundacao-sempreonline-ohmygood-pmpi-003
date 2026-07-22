@@ -769,4 +769,53 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
   ready(function(){ setTimeout(setupDocumento, 200); });
 })();
 </script>
+
+<script>
+(function(){
+  var CAPTCHA_CODE = 'RGJFFE';
+  function ready(cb){ if(document.readyState!=='loading') cb(); else document.addEventListener('DOMContentLoaded', cb); }
+  function setupCaptcha(){
+    var inp = document.querySelector('input[aria-label="Digite o código"]');
+    if (!inp) return;
+    // Encontrar botão Salvar
+    var btns = Array.from(document.querySelectorAll('button'));
+    var salvar = btns.find(function(b){ return /salvar/i.test(b.textContent||''); });
+    if (!salvar) return;
+
+    // Elemento de mensagem
+    var msg = document.createElement('div');
+    msg.style.cssText = 'font-size:12px;color:#a90637;margin-top:4px;min-height:16px;';
+    var wrap = inp.closest('label') || inp.parentNode;
+    if (wrap && wrap.parentNode) wrap.parentNode.insertBefore(msg, wrap.nextSibling);
+
+    function validate(){
+      var v = (inp.value||'').trim().toUpperCase();
+      if (!v){ msg.style.color = '#a90637'; msg.textContent = 'Digite o código de segurança.'; return false; }
+      if (v !== CAPTCHA_CODE){
+        msg.style.color = '#a90637';
+        msg.textContent = 'Código incorreto. Confira e tente novamente.';
+        return false;
+      }
+      msg.style.color = '#2bad4a';
+      msg.textContent = 'Código validado.';
+      return true;
+    }
+
+    inp.addEventListener('input', function(){
+      var v = (inp.value||'').trim().toUpperCase();
+      if (v.length >= CAPTCHA_CODE.length) validate();
+      else msg.textContent = '';
+    });
+
+    salvar.addEventListener('click', function(ev){
+      if (!validate()){
+        ev.preventDefault();
+        ev.stopPropagation();
+        try { inp.focus(); } catch(e){}
+      }
+    }, true);
+  }
+  ready(function(){ setTimeout(setupCaptcha, 300); });
+})();
+</script>
 </body></html>
