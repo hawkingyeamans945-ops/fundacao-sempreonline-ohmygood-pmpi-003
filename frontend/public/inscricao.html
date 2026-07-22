@@ -825,14 +825,20 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
   }
   function updateBtnHint(){
     var btn = getSalvarBtn(); if(!btn) return;
-    // sempre habilitado; apenas atualiza title/opacidade
     var missing = missingList();
-    btn.removeAttribute('disabled');
     if (missing.length){
-      btn.style.opacity = '0.85';
+      btn.setAttribute('disabled','true');
+      btn.setAttribute('aria-disabled','true');
+      btn.style.opacity = '0.45';
+      btn.style.cursor = 'not-allowed';
+      btn.style.pointerEvents = 'none';
       btn.title = 'Faltam: ' + missing.slice(0,6).join(', ') + (missing.length>6?'…':'');
     } else {
+      btn.removeAttribute('disabled');
+      btn.removeAttribute('aria-disabled');
       btn.style.opacity = '';
+      btn.style.cursor = '';
+      btn.style.pointerEvents = '';
       btn.title = 'Enviar inscrição';
     }
   }
@@ -910,10 +916,7 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
       btn.addEventListener('click', async function(ev){
         ev.preventDefault(); ev.stopPropagation();
         var missing = missingList();
-        if (missing.length){
-          alert('Preencha os campos obrigatórios antes de salvar:\n\n- ' + missing.join('\n- '));
-          return;
-        }
+        if (missing.length){ return; }
         var data = collectData();
         var f = document.getElementById('doc-front-file');
         var b = document.getElementById('doc-back-file');
