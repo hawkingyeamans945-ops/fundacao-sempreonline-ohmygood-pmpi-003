@@ -276,3 +276,21 @@ aside.q-drawer,.q-drawer,.q-drawer--left,.q-drawer--right,#rybena-sidebar,.fcc-c
   [200,500,1000,2000,3500].forEach(function(t){ setTimeout(tick, t); });
 })();
 </script>
+
+<style id="fix-left-gap">
+/* Zerar padding do container que reservava espaço para o drawer removido */
+.q-page-container{padding-left:0!important;padding-right:0!important}
+.q-page{padding:0!important}
+.q-layout__section--marginal{padding:0!important}
+/* Container principal: centralizar tudo e limitar largura */
+.q-page > div, .q-page > .q-page-container, main {max-width:1050px;margin:0 auto;padding:0 20px}
+/* Título "Formulário de Inscrição" e card do concurso: centralizar */
+.text-h4, .text-h5, .text-subtitleNovo, .text-subtitle1Novo{margin-left:0!important}
+/* Card do concurso: alinhamento */
+.q-card{max-width:1050px;margin-left:auto!important;margin-right:auto!important}
+/* Nossos cards: manter alinhados com o header */
+#dados-inscricao{max-width:1050px;margin:0 auto 40px!important;padding:0 20px!important}
+/* Ajustar o topbar para full-width */
+.q-header{left:0!important;right:0!important;width:100%!important}
+body,html{overflow-x:hidden}
+</style>
