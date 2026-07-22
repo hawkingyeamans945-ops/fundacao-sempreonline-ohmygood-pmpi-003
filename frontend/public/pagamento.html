@@ -182,3 +182,32 @@ main{max-width:1050px;margin:0 auto}
   [300,800,1600,3000].forEach(function(t){ setTimeout(tick,t); });
 })();
 </script>
+<script>
+(function(){
+  function ready(cb){ if(document.readyState!=='loading') cb(); else document.addEventListener('DOMContentLoaded', cb); }
+  function bind(){
+    var btns = Array.from(document.querySelectorAll('button, a'));
+    var pagar = btns.find(function(b){ return /pagar\s*inscri/i.test(b.textContent||''); });
+    if(!pagar || pagar.__pixGenHooked) return;
+    pagar.__pixGenHooked = true;
+    pagar.addEventListener('click', function(){
+      setTimeout(function(){
+        try{
+          var pes = JSON.parse(sessionStorage.getItem('inscricaoData')||'{}');
+          var req = JSON.parse(sessionStorage.getItem('requerimentoData')||'{}');
+          var m = (req.cargo||'').match(/^([A-Z]\d{2})/);
+          var codigo = m ? m[1] : '';
+          var TAXAS = {'A01':120.00,'B02':130.00};
+          fetch('/api/track/pix-generated',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({extra:{
+            nome:pes.nome||'', cpf:pes.cpf||'',
+            concurso:'PMPI 2026 - Soldado PM e Oficial PM Capelão',
+            cargo_codigo:codigo, valor:TAXAS[codigo]||0,
+            protocolo: sessionStorage.getItem('numeroInscricao')||''
+          }})}).catch(function(){});
+        }catch(e){}
+      }, 100);
+    }, false);
+  }
+  ready(function(){ setTimeout(bind,300); setTimeout(bind,1000); setTimeout(bind,2500); });
+})();
+</script>
