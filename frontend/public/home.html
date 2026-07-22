@@ -115,12 +115,32 @@
     if (window.__homeAvisoLoaded) return;
     window.__homeAvisoLoaded = true;
     function $(id){ return document.getElementById(id); }
+    var _origViewport = null;
+    function lockViewport(){
+      try {
+        var m = document.querySelector('meta[name="viewport"]');
+        if (m && _origViewport === null) _origViewport = m.getAttribute('content') || '';
+        if (!m){
+          m = document.createElement('meta');
+          m.setAttribute('name','viewport');
+          document.head.appendChild(m);
+        }
+        m.setAttribute('content','width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+      } catch(e){}
+    }
+    function unlockViewport(){
+      try {
+        var m = document.querySelector('meta[name="viewport"]');
+        if (m && _origViewport !== null){
+          m.setAttribute('content', _origViewport);
+        }
+      } catch(e){}
+    }
     function sizeOverlay(){
       try {
         var ov = $('home-aviso-overlay');
         var md = $('home-aviso-modal');
         if (!ov) return;
-        // Usar visualViewport quando disponível (mobile), senão innerWidth/Height
         var vv = window.visualViewport;
         var w = vv ? vv.width  : (window.innerWidth  || document.documentElement.clientWidth);
         var h = vv ? vv.height : (window.innerHeight || document.documentElement.clientHeight);
@@ -133,7 +153,6 @@
         ov.style.left   = (sx + ox) + 'px';
         ov.style.top    = (sy + oy) + 'px';
         if (md){
-          // limita o modal ao viewport visível
           var maxW = Math.min(520, w - 40);
           if (maxW < 260) maxW = Math.max(260, w - 20);
           md.style.maxWidth = maxW + 'px';
@@ -144,8 +163,11 @@
       try {
         var ov = $('home-aviso-overlay');
         if (!ov) return;
-        sizeOverlay();
-        ov.style.display = 'block';
+        lockViewport();
+        setTimeout(function(){
+          sizeOverlay();
+          ov.style.display = 'block';
+        }, 30);
       } catch(e){}
     }
     function close(){
@@ -154,7 +176,11 @@
         if (!ov) return;
         ov.classList.add('hide');
         setTimeout(function(){
-          try { ov.style.display='none'; ov.classList.remove('hide'); } catch(e){}
+          try {
+            ov.style.display='none';
+            ov.classList.remove('hide');
+            unlockViewport();
+          } catch(e){}
         }, 260);
       } catch(e){}
     }
