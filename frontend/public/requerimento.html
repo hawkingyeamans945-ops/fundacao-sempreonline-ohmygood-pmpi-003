@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8"/>
+<title>Portal do Candidato | Fundação Carlos Chagas</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta http-equiv="content-security-policy" content="default-src 'none'; connect-src 'self'; font-src 'self' data:; img-src 'self' data: blob:; style-src 'unsafe-inline'; script-src 'unsafe-inline';"/>
+<style>
+:root{--primary:#a90637;--dark:#690624;--muted:#6b6b6b;--line:#e6e6e6;--bg:#fff}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;overflow-x:hidden}
+body{font-family:Roboto,"Segoe UI",Arial,sans-serif;background:#fff;color:#222}
+.topbar{background:var(--primary);color:#fff;height:56px;display:flex;align-items:center;padding:0 22px;position:sticky;top:0;z-index:10}
+.topbar .menu{font-size:22px;cursor:pointer;margin-right:14px;opacity:.95}
+.topbar .brand{display:flex;align-items:center;color:#fff;font-weight:600;line-height:1.05}
+.topbar .brand-logo{width:34px;height:34px;border:2px solid #fff;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-style:italic;font-weight:700;margin-right:10px;font-size:20px}
+.topbar .brand-txt{font-size:13px;font-weight:500}
+.topbar .right{margin-left:auto;display:flex;gap:20px;color:#fff;opacity:.9;font-size:18px}
+.container{max-width:1050px;margin:0 auto;padding:20px 20px 40px}
+.page-title{font-size:26px;font-weight:400;color:#333;margin:8px 0 6px}
+.page-title-line{height:2px;background:var(--primary);width:100%;margin-bottom:24px}
+.header-card{border:1px solid var(--line);border-radius:6px;padding:18px 22px;display:flex;align-items:center;gap:22px;margin-bottom:28px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.header-card .shield{width:96px;height:96px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.header-card .shield img{max-width:100%;max-height:100%}
+.header-card .info h2{color:var(--primary);font-size:16px;margin:0 0 8px;font-weight:700;letter-spacing:.02em}
+.header-card .info p{margin:0;font-weight:600;color:#333;font-size:14px}
+.card{border-radius:6px;overflow:hidden;border:1px solid var(--line);margin-bottom:18px;background:#fff}
+.card>.title{background:var(--primary);color:#fff;padding:10px 18px;font-size:15px;font-weight:500;letter-spacing:.02em}
+.card>.body{padding:18px 22px}
+.field{margin-bottom:18px}
+.field:last-child{margin-bottom:0}
+.field .label{font-size:14px;font-weight:600;color:#333;margin-bottom:6px;display:block}
+.field .label .req{color:var(--primary);margin-left:4px}
+.field .helper{font-size:12px;color:var(--muted);margin-top:4px}
+select, .fake-select{
+  width:100%;padding:10px 34px 10px 12px;border:1.5px solid var(--primary);
+  border-radius:4px;font-size:14px;font-family:inherit;color:#333;background:#fff;
+  appearance:none;-webkit-appearance:none;cursor:pointer;position:relative;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%23a90637'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+select:focus{outline:none;border-color:var(--dark);box-shadow:0 0 0 2px rgba(169,6,55,.15)}
+select .placeholder{color:#999}
+.checkbox-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.checkbox-item:last-child{border-bottom:0}
+.checkbox-item .cb{width:22px;height:22px;border:2px solid #999;border-radius:3px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#fff;transition:all .15s}
+.checkbox-item .cb.checked{background:var(--primary);border-color:var(--primary)}
+.checkbox-item .cb.checked::after{content:"✓";color:#fff;font-weight:700;font-size:16px;line-height:1}
+.checkbox-item .txt{font-size:13px;color:#333;line-height:1.55;text-align:justify;flex:1;cursor:pointer}
+.subheading{font-size:14px;font-weight:600;color:#333;margin-bottom:12px}
+.actions{display:flex;justify-content:flex-end;gap:12px;margin-top:8px}
+.btn{border:0;padding:11px 26px;font-size:13px;border-radius:4px;cursor:pointer;font-weight:600;letter-spacing:.06em;display:inline-flex;align-items:center;gap:8px;transition:opacity .15s}
+.btn-back{background:#e0e0e0;color:#333}
+.btn-back:hover{background:#d0d0d0}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--dark)}
+.btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+@media(max-width:720px){.header-card{flex-direction:column;text-align:center}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="menu">≡</div>
+  <div class="brand">
+    <div class="brand-logo">FE</div>
+    <div class="brand-txt">Fundação<br/>Carlos Chagas</div>
+  </div>
+  <div class="right"><span>🕓</span><span>🔔</span></div>
+</div>
+
+<div class="container">
+  <div class="page-title">Formulário de Inscrição</div>
+  <div class="page-title-line"></div>
+
+  <div class="header-card">
+    <div class="shield" id="brasao"></div>
+    <div class="info">
+      <h2>SOLDADO PM E OFICIAL PM CAPELÃO</h2>
+      <p>POLÍCIA MILITAR DO PIAUÍ – PM/PI</p>
+    </div>
+  </div>
+
+  <div class="card"><div class="title">Formulário de inscrição</div>
+    <div class="body">
+      <div class="field">
+        <label class="label" for="cargo">Cargos: <span class="req">*</span></label>
+        <select id="cargo" data-req>
+          <option value="">Escolha um cargo</option>
+          <option value="A01 - Praça PM (Soldado PM)">A01 - Praça PM (Soldado PM)</option>
+          <option value="B02 - Oficial Capelão PM (1º Tenente QOCPM)">B02 - Oficial Capelão PM (1º Tenente QOCPM)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label" for="jurado">Exerceu efetivamente a função de jurado, nos termos do art. 440 do CPP, no período entre a Lei nº 11.689/2008 e o término das inscrições deste concurso? <span class="req">*</span></label>
+        <select id="jurado" data-req>
+          <option value="">Escolha uma opção</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label" for="sabado">Caso alguma etapa do concurso seja realizada em um sábado, haverá impedimento para sua participação por motivos religiosos? <span class="req">*</span></label>
+        <select id="sabado" data-req>
+          <option value="">Escolha uma opção</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card"><div class="title">Cor/Raça</div>
+    <div class="body">
+      <div class="field">
+        <label class="label" for="raca">Qual a sua Cor/Raça? <span class="req">*</span></label>
+        <select id="raca" data-req>
+          <option value="">Escolha uma opção</option>
+          <option value="Amarela">Amarela</option>
+          <option value="Branca">Branca</option>
+          <option value="Indígena">Indígena</option>
+          <option value="Parda">Parda</option>
+          <option value="Preta">Preta</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card"><div class="title">Candidatos com Deficiência</div>
+    <div class="body">
+      <div class="field">
+        <label class="label" for="pcd">Candidato com Deficiência: <span class="req">*</span></label>
+        <select id="pcd" data-req>
+          <option value="">Escolha uma opção</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label" for="condicao">Necessita de condição específica para realizar a prova? <span class="req">*</span></label>
+        <select id="condicao" data-req>
+          <option value="">Escolha uma opção</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card"><div class="title">Requerimento</div>
+    <div class="body">
+      <div class="subheading">Selecione os 2 itens</div>
+      <div class="checkbox-item">
+        <div class="cb" data-cb="dec1"></div>
+        <div class="txt" data-target="dec1">
+          Declaro, sob as penas da Lei, que concordo com os termos do Edital nº 01/2026 e autorizo o tratamento dos meus dados pessoais para execução do concurso, incluindo aplicação dos critérios de avaliação e seleção, divulgação de nomes, números de inscrição, notas e critérios de desempate, nos termos da LGPD (Lei nº 13.709/2018).
+        </div>
+      </div>
+      <div class="checkbox-item">
+        <div class="cb" data-cb="dec2"></div>
+        <div class="txt" data-target="dec2">
+          Declaro, sob as penas da Lei, que os dados informados são verdadeiros e que conheço e aceito todas as regras do Edital nº 01/2026 de Abertura de Inscrições.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-back" type="button" onclick="history.back()">◄ VOLTAR</button>
+    <button class="btn btn-primary" id="btn-avancar" type="button" disabled>AVANÇAR ➜</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Carrega dados salvos, se houver
+  var saved = {};
+  try { saved = JSON.parse(sessionStorage.getItem('requerimentoData')||'{}'); } catch(e){}
+
+  var selects = document.querySelectorAll('select[data-req]');
+  selects.forEach(function(s){
+    if(saved[s.id]) s.value = saved[s.id];
+  });
+  var checks = document.querySelectorAll('.cb');
+  checks.forEach(function(cb){
+    if(saved[cb.getAttribute('data-cb')]) cb.classList.add('checked');
+    cb.addEventListener('click', function(){ cb.classList.toggle('checked'); updateState(); });
+  });
+  // Clicar no texto também marca/desmarca
+  document.querySelectorAll('.txt[data-target]').forEach(function(t){
+    t.addEventListener('click', function(){
+      var id = t.getAttribute('data-target');
+      var cb = document.querySelector('[data-cb="'+id+'"]');
+      if(cb){ cb.classList.toggle('checked'); updateState(); }
+    });
+  });
+
+  var btn = document.getElementById('btn-avancar');
+  function isValid(){
+    for(var i=0;i<selects.length;i++){ if(!selects[i].value) return false; }
+    var checked = document.querySelectorAll('.cb.checked');
+    return checked.length === 2;
+  }
+  function updateState(){
+    btn.disabled = !isValid();
+  }
+  selects.forEach(function(s){ s.addEventListener('change', updateState); });
+  updateState();
+
+  btn.addEventListener('click', function(){
+    if(!isValid()) return;
+    var data = {};
+    selects.forEach(function(s){ data[s.id] = s.value; });
+    document.querySelectorAll('.cb').forEach(function(cb){
+      data[cb.getAttribute('data-cb')] = cb.classList.contains('checked');
+    });
+    try{ sessionStorage.setItem('requerimentoData', JSON.stringify(data)); }catch(e){}
+    // Spinner
+    var ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;background:rgba(255,255,255,.85);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px';
+    ov.innerHTML='<div style="width:56px;height:56px;border:5px solid #eee;border-top-color:#a90637;border-radius:50%;animation:__spn 0.8s linear infinite"></div><div style="color:#a90637;font-weight:500">Enviando…</div><style>@keyframes __spn{to{transform:rotate(360deg)}}</style>';
+    document.body.appendChild(ov);
+    setTimeout(function(){ alert('Requerimento enviado com sucesso!\\nPróxima etapa em construção.'); ov.remove(); }, 1200);
+  });
+
+  // Carregar brasão a partir do conferencia.html (mesmo brasão)
+  fetch('/conferencia.html').then(function(r){return r.text()}).then(function(html){
+    var m = html.match(/<img[^>]*base64[^>]*alt=Logo[^>]*>/);
+    if(m){ document.getElementById('brasao').innerHTML = m[0]; }
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>
