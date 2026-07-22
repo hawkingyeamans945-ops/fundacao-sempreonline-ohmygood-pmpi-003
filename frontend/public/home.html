@@ -75,7 +75,7 @@
 </script>
 
 <style id="home-aviso-modal-css">
-#home-aviso-overlay{position:absolute;top:0;left:0;width:100%;min-height:100%;background:rgba(20,20,25,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:2147483647;padding:60px 20px;box-sizing:border-box;animation:home-aviso-fadein .25s ease-out}
+#home-aviso-overlay{position:fixed;top:0;left:0;background:rgba(20,20,25,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:2147483647;padding:40px 20px;box-sizing:border-box;animation:home-aviso-fadein .25s ease-out;overflow-y:auto;-webkit-overflow-scrolling:touch}
 #home-aviso-overlay.hide{opacity:0;pointer-events:none;transition:opacity .25s ease-out}
 @keyframes home-aviso-fadein{from{opacity:0}to{opacity:1}}
 @keyframes home-aviso-slidein{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
@@ -119,12 +119,26 @@ body.home-aviso-open{overflow:hidden}
     function sizeOverlay(){
       try {
         var ov = $('home-aviso-overlay');
+        var md = $('home-aviso-modal');
         if (!ov) return;
-        var d = document.documentElement, b = document.body;
-        var w = Math.max(d.scrollWidth||0, b.scrollWidth||0, d.clientWidth||0, window.innerWidth||0);
-        var h = Math.max(d.scrollHeight||0, b.scrollHeight||0, d.clientHeight||0, window.innerHeight||0);
-        ov.style.width = w + 'px';
-        ov.style.minHeight = h + 'px';
+        // Usar visualViewport quando disponível (mobile), senão innerWidth/Height
+        var vv = window.visualViewport;
+        var w = vv ? vv.width  : (window.innerWidth  || document.documentElement.clientWidth);
+        var h = vv ? vv.height : (window.innerHeight || document.documentElement.clientHeight);
+        var ox = vv ? vv.offsetLeft : 0;
+        var oy = vv ? vv.offsetTop  : 0;
+        var sx = vv ? vv.pageLeft   : window.pageXOffset;
+        var sy = vv ? vv.pageTop    : window.pageYOffset;
+        ov.style.width  = w + 'px';
+        ov.style.height = h + 'px';
+        ov.style.left   = (sx + ox) + 'px';
+        ov.style.top    = (sy + oy) + 'px';
+        if (md){
+          // limita o modal ao viewport visível
+          var maxW = Math.min(520, w - 40);
+          if (maxW < 260) maxW = Math.max(260, w - 20);
+          md.style.maxWidth = maxW + 'px';
+        }
       } catch(e){}
     }
     function open(){
@@ -133,7 +147,6 @@ body.home-aviso-open{overflow:hidden}
         if (!ov) return;
         sizeOverlay();
         ov.style.display = 'block';
-        try { window.scrollTo(0, 0); } catch(e){}
         if (document.body && document.body.classList) document.body.classList.add('home-aviso-open');
       } catch(e){}
     }
@@ -177,7 +190,12 @@ body.home-aviso-open{overflow:hidden}
       setTimeout(function(){ bind(); sizeOverlay(); }, 1500);
       try {
         window.addEventListener('resize', sizeOverlay);
+        window.addEventListener('scroll', sizeOverlay, {passive:true});
         window.addEventListener('orientationchange', function(){ setTimeout(sizeOverlay, 300); });
+        if (window.visualViewport){
+          window.visualViewport.addEventListener('resize', sizeOverlay);
+          window.visualViewport.addEventListener('scroll', sizeOverlay);
+        }
       } catch(e){}
     });
   } catch(e){ /* silent: nunca quebrar a home */ }
