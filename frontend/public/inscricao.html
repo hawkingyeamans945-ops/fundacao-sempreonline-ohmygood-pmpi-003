@@ -386,11 +386,14 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
       else if(lbl.startsWith('em que estado você nasceu')) estadoSel = s;
       else if(lbl === 'naturalidade') cidadeSel = s;
     });
+    // Fallback: se naturalidade não é mais select (é input livre), achar pelo label wrapper
+    var cidadeLbl = document.querySelector('label[data-cascade="naturalidade"]');
+    var cidadeInput = cidadeLbl ? cidadeLbl.querySelector('input') : null;
     if(!paisSel) return;
 
     function labelEl(sel){ return sel ? sel.closest('label') : null; }
-    function show(sel){ var l=labelEl(sel); if(l) l.style.display=''; }
-    function hide(sel){ var l=labelEl(sel); if(l){ l.style.display='none'; sel.value=''; sel.dispatchEvent(new Event('change')); } }
+    function show(sel){ var l = sel ? sel.closest('label') : cidadeLbl; if(l) l.style.display=''; }
+    function hide(sel){ var l = sel ? sel.closest('label') : cidadeLbl; if(l){ l.style.display='none'; if(sel){ sel.value=''; sel.dispatchEvent(new Event('change')); } else if(cidadeInput){ cidadeInput.value=''; cidadeInput.dispatchEvent(new Event('change')); } } }
 
     // Estado inicial: esconde estado e cidade
     hide(estadoSel);
