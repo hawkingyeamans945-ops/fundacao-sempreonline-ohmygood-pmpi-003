@@ -274,7 +274,7 @@ body,html{overflow-x:hidden}
         mod.innerHTML='<div style="background:#fff;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.2);min-width:380px;max-width:520px;padding:32px 28px 20px;position:relative"><div style="font-size:17px;color:#333;margin-bottom:22px;padding-right:24px">Inscrição realizada com sucesso!</div><div style="text-align:right"><button id="__ok" style="background:#a90637;color:#fff;border:0;padding:10px 26px;border-radius:4px;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.05em">OK</button></div></div>';
         document.body.appendChild(mod);
         var done=false;
-        function go(){ if(done) return; done=true; window.location.href='comprovante.html'; }
+        function go(){ if(done) return; done=true; window.location.href='pagamento.html'; }
         document.getElementById('__ok').addEventListener('click', go);
         setTimeout(go, 5000);
       }, 2000);
