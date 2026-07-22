@@ -109,3 +109,51 @@ main{max-width:1050px;margin:0 auto}
   try{ new MutationObserver(purge).observe(document.documentElement, {childList:true, subtree:true}); }catch(e){}
 })();
 </script>
+
+<script>
+(function(){
+  function fmt(n){ return n<10?'0'+n:''+n; }
+  function agora(){
+    var d=new Date();
+    return fmt(d.getDate())+'/'+fmt(d.getMonth()+1)+'/'+d.getFullYear()+' '+fmt(d.getHours())+':'+fmt(d.getMinutes())+':'+fmt(d.getSeconds());
+  }
+  function gerarNumeroInscricao(){
+    var salvo = sessionStorage.getItem('numeroInscricao');
+    if(salvo) return salvo;
+    // 9 dígitos aleatórios
+    var n = '';
+    for(var i=0;i<9;i++) n += Math.floor(Math.random()*10);
+    sessionStorage.setItem('numeroInscricao', n);
+    sessionStorage.setItem('dataInscricao', agora());
+    return n;
+  }
+  function atualizar(){
+    var req = {}; try{ req = JSON.parse(sessionStorage.getItem('requerimentoData')||'{}'); }catch(e){}
+    var cargo = req.cargo || '';
+    var num = gerarNumeroInscricao();
+    var dataStr = sessionStorage.getItem('dataInscricao') || agora();
+
+    // Percorrer nós de texto e substituir os valores travados
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    var nodes = [];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function(n){
+      var v = n.nodeValue; if(!v) return;
+      var nv = v;
+      // Num pedido: 9 dígitos padrão fixo do modelo
+      nv = nv.replace(/\b126468083\b/g, num);
+      // Data inscricao fixa
+      nv = nv.replace(/22\/07\/2026\s+00:36:15/g, dataStr);
+      // Cargo se preenchido
+      if(cargo){
+        nv = nv.replace(/A01\s*-\s*Praça PM \(Soldado PM\)/g, cargo);
+      }
+      if(nv !== v) n.nodeValue = nv;
+    });
+  }
+  function tick(){ atualizar(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', tick);
+  else tick();
+  [100,400,900,1800,3500].forEach(function(t){ setTimeout(tick, t); });
+})();
+</script>
