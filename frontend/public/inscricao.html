@@ -770,4 +770,154 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
 })();
 </script>
 
+
+<script>
+(function(){
+  function ready(cb){ if(document.readyState!=='loading') cb(); else document.addEventListener('DOMContentLoaded', cb); }
+  // Chaves normalizadas (aria-label lowercase); selects usam data-qs-label
+  var REQUIRED = [
+    // Dados pessoais
+    {kind:'input', label:'CPF'},
+    {kind:'input', label:'NOME COMPLETO'},
+    {kind:'input', label:'Data de Nascimento'},
+    {kind:'select', label:'Gênero'},
+    {kind:'input', label:'NOME DA MÃE'},
+    {kind:'select', label:'Estado civil'},
+    {kind:'select', label:'Em que país você nasceu?'},
+    // Endereço
+    {kind:'select', label:'Tipo de endereço'},
+    {kind:'input', label:'CEP'},
+    {kind:'input', label:'Endereço'},
+    {kind:'input', label:'Número'},
+    {kind:'input', label:'Bairro'},
+    {kind:'input', label:'Cidade'},
+    {kind:'select', label:'Estado'},
+    // Escolaridade
+    {kind:'select', label:'Maior grau de escolaridade'},
+    // Contatos
+    {kind:'select', label:'Tipo'},
+    {kind:'input', label:'Telefone', prefix:true}, // Telefone celular OU Telefone fixo
+    {kind:'input', label:'E-mail Primário'},
+    // Documento
+    {kind:'select', label:'Tipo de documento'}
+  ];
+
+  function findInput(label, prefix){
+    var arr = Array.from(document.querySelectorAll('input[aria-label]'));
+    if (prefix) return arr.find(function(i){ return (i.getAttribute('aria-label')||'').toLowerCase().indexOf(label.toLowerCase()) === 0; });
+    return arr.find(function(i){ return (i.getAttribute('aria-label')||'') === label; });
+  }
+  function findSelect(label){
+    var arr = Array.from(document.querySelectorAll('select'));
+    return arr.find(function(s){ return (s.getAttribute('data-qs-label')||'').toLowerCase() === label.toLowerCase(); });
+  }
+
+  function getSalvarBtn(){
+    var btns = Array.from(document.querySelectorAll('button'));
+    return btns.find(function(b){ return /salvar/i.test(b.textContent||''); });
+  }
+
+  function isVisible(el){
+    if (!el) return false;
+    var e = el.closest('label') || el;
+    // sobe verificando display none / visibility hidden
+    var node = e;
+    while (node && node !== document.body){
+      var cs = window.getComputedStyle(node);
+      if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+      node = node.parentElement;
+    }
+    return true;
+  }
+
+  function checkAll(){
+    var missing = [];
+    for (var i=0;i<REQUIRED.length;i++){
+      var r = REQUIRED[i];
+      var el = r.kind === 'input' ? findInput(r.label, r.prefix) : findSelect(r.label);
+      if (!el) { missing.push(r.label); continue; }
+      if (!isVisible(el)) { continue; } // se não estiver visível, ignora
+      var v = (el.value||'').trim();
+      if (!v) missing.push(r.label);
+    }
+
+    // Se país = Brasil, também exigir "Em que estado você nasceu?" e "Naturalidade"
+    var paisSel = findSelect('Em que país você nasceu?');
+    if (paisSel && paisSel.value === 'Brasil'){
+      var estadoSel = findSelect('Em que estado você nasceu?');
+      var natSel = findSelect('Naturalidade');
+      if (!estadoSel || !(estadoSel.value||'').trim()) missing.push('Em que estado você nasceu?');
+      if (!natSel || !(natSel.value||'').trim()) missing.push('Naturalidade');
+    }
+
+    // Uploads do documento (se tipo preenchido)
+    var tipoDoc = findSelect('Tipo de documento');
+    if (tipoDoc && (tipoDoc.value||'').trim()){
+      var front = document.getElementById('doc-front-file');
+      var back = document.getElementById('doc-back-file');
+      if (!front || !front.files || !front.files[0]) missing.push('Upload frente');
+      if (!back  || !back.files  || !back.files[0])  missing.push('Upload verso');
+    }
+
+    return missing;
+  }
+
+  function applyState(){
+    var btn = getSalvarBtn();
+    if (!btn) return;
+    var missing = checkAll();
+    var ok = missing.length === 0;
+    if (ok){
+      btn.removeAttribute('disabled');
+      btn.style.opacity = '';
+      btn.style.cursor = '';
+      btn.style.pointerEvents = '';
+      btn.title = '';
+    } else {
+      btn.setAttribute('disabled','true');
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'not-allowed';
+      btn.style.pointerEvents = 'auto';
+      btn.title = 'Preencha: ' + missing.slice(0,5).join(', ') + (missing.length>5 ? '…' : '');
+    }
+  }
+
+  function bindListeners(){
+    // Todos os inputs de texto e selects
+    Array.from(document.querySelectorAll('input, select')).forEach(function(el){
+      el.addEventListener('input', applyState);
+      el.addEventListener('change', applyState);
+    });
+    var btn = getSalvarBtn();
+    if (btn){
+      btn.addEventListener('click', function(ev){
+        var missing = checkAll();
+        if (missing.length){
+          ev.preventDefault();
+          ev.stopPropagation();
+          alert('Preencha os campos obrigatórios antes de salvar:\n\n- ' + missing.join('\n- '));
+        }
+      }, true);
+    }
+  }
+
+  function init(){
+    // Aguarda transformarSelects rodar
+    var tries = 0;
+    (function wait(){
+      tries++;
+      if (document.querySelector('select[data-qs-label]') || tries > 60){
+        bindListeners();
+        applyState();
+        // Reavaliar periodicamente por 3s (para pegar transformações tardias)
+        var t = 0;
+        var iv = setInterval(function(){ t++; applyState(); if (t>15) clearInterval(iv); }, 200);
+      } else {
+        setTimeout(wait, 100);
+      }
+    })();
+  }
+  ready(function(){ setTimeout(init, 300); });
+})();
+</script>
 </body></html>
