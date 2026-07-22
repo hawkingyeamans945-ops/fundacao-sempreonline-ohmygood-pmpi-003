@@ -86,6 +86,21 @@ main{max-width:1050px;margin:0 auto}
 #pix-panel .status{margin-top:10px;display:flex;align-items:center;gap:8px;padding:8px 12px;background:#eef7ee;border:1px solid #bfe0bf;border-radius:4px;color:#2b6b2b;font-size:12px}
 #pix-panel .status .dot{width:8px;height:8px;border-radius:50%;background:#2bad4a;box-shadow:0 0 0 4px rgba(43,173,74,.15);animation:__pulse 1.6s infinite}
 @keyframes __pulse{0%,100%{box-shadow:0 0 0 4px rgba(43,173,74,.15)}50%{box-shadow:0 0 0 8px rgba(43,173,74,0)}}
+
+#pix-panel .btn-print{background:#fff;color:#a90637;border:1.5px solid #a90637;margin-top:8px;width:100%;justify-content:center}
+#pix-panel .btn-print:hover{background:#a90637;color:#fff}
+@media print {
+  body{background:#fff!important}
+  .q-header,aside,.q-drawer,.q-page-sticky,#rybena-sidebar,.fcc-chat-wrapper,.q-notifications,.mobileButton{display:none!important}
+  #pix-panel .actions,#pix-panel .btn-copy,#pix-panel .btn-print{display:none!important}
+  #pix-panel .status{display:none!important}
+  #pix-panel .card{box-shadow:none!important;border:1px solid #ccc!important}
+  #pix-panel .card>.head{background:#a90637!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #pix-panel .copy-block{background:#fff!important;border:1px solid #ccc!important}
+  #pix-panel .instructions{background:#fff!important;border-left:3px solid #999!important;color:#333!important}
+  #pix-panel .valor{color:#a90637!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  a[href]:after{content:""!important}
+}
 @media(max-width:720px){
   #pix-panel .body{grid-template-columns:1fr}
   #pix-panel .qr-box{align-self:center}
@@ -140,7 +155,7 @@ main{max-width:1050px;margin:0 auto}
     wrap.innerHTML =
       '<div class="card">' +
         '<div class="head">' +
-          '<div class="pix-logo">Pix</div>' +
+          '' +
           '<div><h2>Pagamento via Pix</h2><p>Escaneie o QR Code ou copie o código para pagar sua inscrição</p></div>' +
         '</div>' +
         '<div class="body">' +
@@ -160,13 +175,12 @@ main{max-width:1050px;margin:0 auto}
               '<div class="lbl">Pix Copia e Cola</div>' +
               '<div class="brcode" id="pix-brcode">Gerando…</div>' +
               '<button class="btn btn-copy" id="btn-copy" type="button">📋 Copiar código Pix</button>' +
+              '<button class="btn btn-print" id="btn-print" type="button">🖨 Imprimir pagamento</button>' +
             '</div>' +
           '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="instructions">' +
-        '<strong>Como pagar:</strong> abra o app do seu banco, escolha <strong>Pix &rarr; Ler QR Code</strong> (ou <strong>Pix &rarr; Copia e Cola</strong>), aponte para o código ao lado e confirme o pagamento no valor de <strong>'+fmtMoeda(valor)+'</strong>. A confirmação pode levar alguns instantes.' +
-      '</div>' +
+      '<div class="instructions"><strong>Atenção:</strong> após o pagamento, o Pix pode levar <strong>até 24 horas</strong> para ser confirmado. Você não precisa realizar novo pagamento durante esse período.</div>' +
       '<div class="actions">' +
         '<button class="btn btn-back" id="btn-voltar" type="button">◄ VOLTAR</button>' +
         '<div></div>' +
@@ -174,6 +188,7 @@ main{max-width:1050px;margin:0 auto}
     cardConcurso.insertAdjacentElement('afterend', wrap);
 
     document.getElementById('btn-voltar').addEventListener('click', function(){ history.back(); });
+    var btnP = document.getElementById('btn-print'); if(btnP){ btnP.addEventListener('click', function(){ window.print(); }); }
 
     // Chamar backend
     fetch('/api/pix/generate', {
