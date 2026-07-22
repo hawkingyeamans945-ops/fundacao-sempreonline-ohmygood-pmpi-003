@@ -89,6 +89,9 @@ dialog#home-aviso .ha-body p b{color:#111!important;font-weight:700!important}
 dialog#home-aviso .ha-body p .hoje,dialog#home-aviso .ha-body p .hora{color:#a90637!important;font-weight:700!important}
 dialog#home-aviso .ha-body .btn-ok{background:#a90637!important;color:#fff!important;border:0!important;padding:.8em 2.2em!important;border-radius:.4em!important;font-size:1em!important;font-weight:600!important;cursor:pointer;box-shadow:0 4px 12px rgba(169,6,55,.25)!important;font-family:inherit!important;margin:0!important;position:static!important;display:inline-block!important}
 dialog#home-aviso .ha-body .btn-ok:hover{background:#7a0424!important}
+@media (max-width: 900px), (pointer: coarse) {
+  dialog#home-aviso, dialog#home-aviso::backdrop { display: none !important; }
+}
 </style>
 <dialog id="home-aviso" aria-labelledby="home-aviso-title">
   <div class="card">
@@ -136,8 +139,15 @@ dialog#home-aviso .ha-body .btn-ok:hover{background:#7a0424!important}
         }
       } catch(e){}
     }
+    function isMobile(){
+      try {
+        if (window.matchMedia && window.matchMedia('(max-width: 900px), (pointer: coarse)').matches) return true;
+        return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+      } catch(e){ return false; }
+    }
     function openModal(){
       try {
+        if (isMobile()) return;
         var d = document.getElementById('home-aviso');
         if (!d) return;
         fitToScale();
