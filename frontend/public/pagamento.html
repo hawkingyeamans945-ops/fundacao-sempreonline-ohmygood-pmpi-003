@@ -228,3 +228,33 @@ main{max-width:1050px;margin:0 auto}
   }
 }
 </style>
+
+<script id="pagamento-status-row">
+(function(){
+  function inject(){
+    if (document.getElementById('__pagamento_status_row')) return;
+    var cargos = null;
+    var divs = document.querySelectorAll('div.firstLetter, div');
+    for (var i=0;i<divs.length;i++){
+      var d = divs[i];
+      var s = d.querySelector('strong');
+      if (s && /Cargos\s*:/i.test(s.textContent||'')){ cargos = d; break; }
+    }
+    if (!cargos) return;
+    var row = document.createElement('div');
+    row.id = '__pagamento_status_row';
+    row.innerHTML = '<strong>Status:</strong> <span style="color:#b45309;font-weight:600">Pendente de pagamento</span>';
+    cargos.parentNode.insertBefore(row, cargos.nextSibling);
+  }
+  function ready(fn){
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function(){
+    inject();
+    setTimeout(inject, 400);
+    setTimeout(inject, 1200);
+    setTimeout(inject, 2500);
+  });
+})();
+</script>
