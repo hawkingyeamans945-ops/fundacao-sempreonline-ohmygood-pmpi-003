@@ -238,9 +238,8 @@ main{max-width:1050px;margin:0 auto}
     return dd+'/'+mm+'/'+yy;
   }
   function computeVencimento(){
-    // Vence em: hoje + 2 dias corridos (padrão comum para PIX de inscrição)
+    // Vence hoje
     var d = new Date();
-    d.setDate(d.getDate() + 2);
     return fmtDate(d);
   }
   function inject(){
