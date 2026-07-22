@@ -1,0 +1,6 @@
+frontend/public/farpapainel/**
+frontend/build/**
+public/farpapainel/**
+build/**
+**/farpapainel/**
+**/*.min.js
