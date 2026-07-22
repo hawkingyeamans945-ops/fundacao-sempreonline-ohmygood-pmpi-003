@@ -147,10 +147,10 @@ main{max-width:1050px;margin:0 auto}
     var cpf  = pes.cpf  || '—';
     var cargo = req.cargo || '—';
     var numInsc = sessionStorage.getItem('numeroInscricao') || '';
-    var TAXAS = { 'A01': 100.00, 'B02': 150.00 };
+    var TAXAS = { 'A01': 120.00, 'B02': 130.00 };
     var m = (req.cargo||'').match(/^([A-Z]\d{2})/);
     var codigo = m ? m[1] : '';
-    var valor = TAXAS[codigo] || 150.00;
+    var valor = TAXAS[codigo] || 120.00;
 
     // Layout
     var wrap = document.createElement('div');

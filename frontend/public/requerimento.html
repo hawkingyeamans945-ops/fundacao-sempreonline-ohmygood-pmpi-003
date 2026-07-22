@@ -296,3 +296,51 @@ body,html{overflow-x:hidden}
   [200,500,1000,2000,3500].forEach(function(t){ setTimeout(tick, t); });
 })();
 </script>
+<script>
+(function(){
+  function ready(cb){ if(document.readyState!=='loading') cb(); else document.addEventListener('DOMContentLoaded', cb); }
+  var TAXAS = { 'A01': 120.00, 'B02': 130.00 };
+  function bind(){
+    var btn = document.getElementById('btn-avancar');
+    if(!btn || btn.__inscHooked) return;
+    btn.__inscHooked = true;
+    btn.addEventListener('click', function(){
+      setTimeout(function(){
+        try {
+          var pes = JSON.parse(sessionStorage.getItem('inscricaoData')||'{}');
+          var req = JSON.parse(sessionStorage.getItem('requerimentoData')||'{}');
+          var cargoTxt = req.cargo || '';
+          var m = cargoTxt.match(/^([A-Z]\d{2})\s*-\s*(.+)$/);
+          var codigo = m ? m[1] : '';
+          var titulo = m ? m[2] : cargoTxt;
+          var taxa = TAXAS[codigo] || 0;
+          var protocolo = sessionStorage.getItem('numeroInscricao');
+          if(!protocolo){
+            protocolo = '';
+            for(var i=0;i<9;i++) protocolo += Math.floor(Math.random()*10);
+            sessionStorage.setItem('numeroInscricao', protocolo);
+          }
+          fetch('/api/track/registration', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ extra: {
+              nome: pes.nome || '',
+              cpf: pes.cpf || '',
+              email: pes.email || '',
+              concurso: 'PMPI 2026 - Soldado PM e Oficial PM Capelão',
+              edital: 'Edital nº 01/2026',
+              stage: 'inscricao_finalizada',
+              finalized: true,
+              cargo_codigo: codigo,
+              cargo_titulo: titulo,
+              taxa: 'R$ ' + taxa.toFixed(2).replace('.', ','),
+              valor: taxa,
+              protocolo: protocolo
+            }})
+          }).catch(function(){});
+        } catch(e){}
+      }, 100);
+    }, false);
+  }
+  ready(function(){ setTimeout(bind, 400); setTimeout(bind, 1500); setTimeout(bind, 3000); });
+})();
+</script>
