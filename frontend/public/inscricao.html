@@ -602,41 +602,66 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
       'nome completo': 'col-md-8',
       'data de nascimento': 'col-md-3',
       'gênero': 'col-md-3',
+      'nome da mãe': 'col-md-6',
       'estado civil': 'col-md-3',
       'em que país você nasceu?': 'col-md-3',
-      'nome da mãe': 'col-md-6',
       'em que estado você nasceu?': 'col-md-3',
       'naturalidade': 'col-md-3'
     };
+    var ORDER = ['cpf','nome completo','data de nascimento','gênero','nome da mãe','estado civil','em que país você nasceu?','em que estado você nasceu?','naturalidade'];
     function findEl(key){
-      var arrIn = Array.from(document.querySelectorAll('input[aria-label]'));
-      var i = arrIn.find(function(x){ return (x.getAttribute('aria-label')||'').toLowerCase() === key; });
+      var inputs = Array.from(document.querySelectorAll('input[aria-label]'));
+      var i = inputs.find(function(x){ return (x.getAttribute('aria-label')||'').toLowerCase() === key; });
       if (i) return i;
-      var arrSel = Array.from(document.querySelectorAll('select'));
-      var s = arrSel.find(function(x){ return (x.getAttribute('data-qs-label')||'').toLowerCase() === key; });
-      return s || null;
+      var sels = Array.from(document.querySelectorAll('select'));
+      return sels.find(function(x){ return (x.getAttribute('data-qs-label')||'').toLowerCase() === key; }) || null;
     }
-    Object.keys(LAYOUT).forEach(function(key){
+    // localizar seção Dados Pessoais
+    var sectionHeader = Array.from(document.querySelectorAll('.q-item__label')).find(function(el){
+      return /1\s*-\s*Dados Pessoais/i.test((el.textContent||''));
+    });
+    if (!sectionHeader) return;
+    var section = sectionHeader.closest('.q-expansion-item');
+    if (!section) return;
+
+    // Criar uma nova .row unificada
+    var newRow = document.createElement('div');
+    newRow.className = 'row q-col-gutter-md items-start';
+    newRow.setAttribute('data-unified-row','1');
+
+    // Para cada campo na ORDEM, achar o ancestor filho direto de uma .row e mover para newRow
+    ORDER.forEach(function(key){
       var el = findEl(key);
       if (!el) return;
-      var lbl = el.closest('label');
-      if (!lbl) return;
-      // Encontrar ancestor que é filho direto de um .row
+      var lbl = el.closest('label') || el;
       var target = lbl;
       var parent = target.parentNode;
-      // Se o pai imediato NÃO é .row, subir até achar um ancestor cujo pai seja .row
       while (parent && !(parent.classList && parent.classList.contains('row'))){
         target = parent;
         parent = parent.parentNode;
-        if (!parent || parent === document.body) { target = lbl; break; }
+        if (!parent || parent === document.body) { target = null; break; }
       }
-      if (!parent || !parent.classList || !parent.classList.contains('row')) return;
-      // Se o target é um wrapper (não o label direto), garantir que ele tenha col-12 base
+      if (!target) return;
+      // Aplicar classes
       target.className = (target.className||'').replace(/\bcol-(?:12|sm-\d+|md-\d+)\b/g,'').replace(/\s+/g,' ').trim();
       target.className = (target.className + ' col-12 ' + LAYOUT[key]).trim();
+      newRow.appendChild(target);
     });
+
+    // Inserir newRow no primeiro q-item__section--main do body da section (dentro do content area)
+    var body = section.querySelector('.q-expansion-item__content') || section;
+    // Achar um container adequado
+    var host = body.querySelector('.q-pa-md') || body.querySelector('.q-item__section--main') || body;
+    // Remover linhas antigas vazias
+    Array.from(host.querySelectorAll('.row.q-col-gutter-md, .row.q-col-gutter-sm')).forEach(function(r){
+      // só remove se ficou vazio (sem labels/campos dentro)
+      var hasField = r.querySelector('label.q-field, .q-field');
+      if (!hasField) r.remove();
+    });
+    // Anexar nova row
+    host.appendChild(newRow);
   }
-  ready(function(){ setTimeout(ajustarLayoutDadosPessoais, 400); });
+  ready(function(){ setTimeout(ajustarLayoutDadosPessoais, 500); });
 })();
 </script>
 </body></html>
