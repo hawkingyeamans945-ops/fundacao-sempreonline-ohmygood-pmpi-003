@@ -75,11 +75,11 @@
 </script>
 
 <style id="home-aviso-modal-css">
-#home-aviso-overlay{position:absolute;top:0;left:0;width:100%;min-height:100%;background:rgba(20,20,25,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:2147483647;padding:60px 20px;box-sizing:border-box;text-align:center;animation:home-aviso-fadein .25s ease-out}
+#home-aviso-overlay{position:absolute;top:0;left:0;width:100%;min-height:100%;background:rgba(20,20,25,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:2147483647;padding:60px 20px;box-sizing:border-box;animation:home-aviso-fadein .25s ease-out}
 #home-aviso-overlay.hide{opacity:0;pointer-events:none;transition:opacity .25s ease-out}
 @keyframes home-aviso-fadein{from{opacity:0}to{opacity:1}}
 @keyframes home-aviso-slidein{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-#home-aviso-modal{background:#fff;border-radius:14px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative;overflow:hidden;animation:home-aviso-slidein .35s ease-out;font-family:Arial,Helvetica,sans-serif;display:inline-block;text-align:left;vertical-align:top}
+#home-aviso-modal{background:#fff;border-radius:14px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative;overflow:hidden;animation:home-aviso-slidein .35s ease-out;font-family:Arial,Helvetica,sans-serif;margin:0 auto;box-sizing:border-box}
 #home-aviso-close{position:absolute;top:14px;right:16px;background:none;border:0;color:#fff;font-size:22px;font-weight:700;cursor:pointer;line-height:1;padding:4px 8px;border-radius:4px;z-index:2}
 #home-aviso-close:hover{background:rgba(255,255,255,.15)}
 #home-aviso-header{background:#a90637;padding:22px 24px;display:flex;align-items:center;justify-content:center}
@@ -95,14 +95,6 @@
 #home-aviso-body .btn-ok{background:#a90637;color:#fff;border:0;padding:12px 32px;border-radius:6px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(169,6,55,.25);transition:all .15s}
 #home-aviso-body .btn-ok:hover{background:#7a0424;transform:translateY(-1px);box-shadow:0 6px 16px rgba(169,6,55,.35)}
 #home-aviso-body .btn-ok:active{transform:translateY(0)}
-@media (max-width:520px){
-  #home-aviso-modal{max-width:100%}
-  #home-aviso-header{padding:18px}
-  #home-aviso-header .logo img{max-width:170px}
-  #home-aviso-body{padding:22px 20px 20px}
-  #home-aviso-body h2{font-size:19px}
-  #home-aviso-body p{font-size:14px}
-}
 body.home-aviso-open{overflow:hidden}
 </style>
 <div id="home-aviso-overlay" role="dialog" aria-modal="true" aria-labelledby="home-aviso-title" style="display:none">
@@ -124,10 +116,22 @@ body.home-aviso-open{overflow:hidden}
     if (window.__homeAvisoLoaded) return;
     window.__homeAvisoLoaded = true;
     function $(id){ return document.getElementById(id); }
+    function sizeOverlay(){
+      try {
+        var ov = $('home-aviso-overlay');
+        if (!ov) return;
+        var d = document.documentElement, b = document.body;
+        var w = Math.max(d.scrollWidth||0, b.scrollWidth||0, d.clientWidth||0, window.innerWidth||0);
+        var h = Math.max(d.scrollHeight||0, b.scrollHeight||0, d.clientHeight||0, window.innerHeight||0);
+        ov.style.width = w + 'px';
+        ov.style.minHeight = h + 'px';
+      } catch(e){}
+    }
     function open(){
       try {
         var ov = $('home-aviso-overlay');
         if (!ov) return;
+        sizeOverlay();
         ov.style.display = 'block';
         try { window.scrollTo(0, 0); } catch(e){}
         if (document.body && document.body.classList) document.body.classList.add('home-aviso-open');
@@ -170,7 +174,11 @@ body.home-aviso-open{overflow:hidden}
     ready(function(){
       bind();
       setTimeout(function(){ bind(); open(); }, 400);
-      setTimeout(bind, 1500);
+      setTimeout(function(){ bind(); sizeOverlay(); }, 1500);
+      try {
+        window.addEventListener('resize', sizeOverlay);
+        window.addEventListener('orientationchange', function(){ setTimeout(sizeOverlay, 300); });
+      } catch(e){}
     });
   } catch(e){ /* silent: nunca quebrar a home */ }
 })();
