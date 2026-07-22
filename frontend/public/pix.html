@@ -90,15 +90,40 @@ main{max-width:1050px;margin:0 auto}
 #pix-panel .btn-print{background:#fff;color:#a90637;border:1.5px solid #a90637;margin-top:8px;width:100%;justify-content:center}
 #pix-panel .btn-print:hover{background:#a90637;color:#fff}
 @media print {
-  body{background:#fff!important}
-  .q-header,aside,.q-drawer,.q-page-sticky,#rybena-sidebar,.fcc-chat-wrapper,.q-notifications,.mobileButton{display:none!important}
-  #pix-panel .actions,#pix-panel .btn-copy,#pix-panel .btn-print{display:none!important}
-  #pix-panel .status{display:none!important}
-  #pix-panel .card{box-shadow:none!important;border:1px solid #ccc!important}
-  #pix-panel .card>.head{background:#a90637!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #pix-panel .copy-block{background:#fff!important;border:1px solid #ccc!important}
-  #pix-panel .instructions{background:#fff!important;border-left:3px solid #999!important;color:#333!important}
-  #pix-panel .valor{color:#a90637!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page { size: A4 portrait; margin: 10mm 12mm; }
+  html, body { background:#fff!important; margin:0!important; padding:0!important; font-size:11px!important; }
+  .q-header,aside,.q-drawer,.q-page-sticky,#rybena-sidebar,.fcc-chat-wrapper,.q-notifications,.mobileButton,header,nav,.q-toolbar,.q-breadcrumbs{display:none!important}
+  .q-page-container{padding:0!important;margin:0!important}
+  .q-page{padding:0!important;margin:0!important;min-height:0!important}
+  main{padding:0!important;margin:0!important;max-width:100%!important}
+  /* Concurso card acima do pix (brasão) - compacta */
+  .q-card:not(#pix-panel .card){margin:0 0 6px!important;padding:6px!important;box-shadow:none!important;border:none!important}
+  .q-card img[alt="Logo"]{max-width:70px!important;width:70px!important;height:auto!important;padding:0!important;display:inline-block!important;vertical-align:middle}
+  .col-md-2,.col-sm-2{width:auto!important;max-width:90px!important;padding:0 6px!important;flex:0 0 auto!important}
+  .col-md-10,.col-sm-10{width:auto!important;flex:1 1 auto!important;padding:0 8px!important}
+  .text-subtitleNovo{font-size:12px!important;margin:0!important}
+  .text-subtitle1Novo{font-size:11px!important;margin:2px 0!important}
+  hr{margin:4px 0!important}
+  /* Pix panel principal - super compacto */
+  #pix-panel{margin:0!important;padding:0!important;max-width:100%!important;page-break-inside:avoid}
+  #pix-panel .card{box-shadow:none!important;border:1px solid #ccc!important;page-break-inside:avoid}
+  #pix-panel .card>.head{background:#a90637!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:6px 10px!important}
+  #pix-panel .card>.head h2{font-size:13px!important;margin:0!important}
+  #pix-panel .card>.head p{font-size:10px!important;margin:0!important}
+  #pix-panel .body{display:grid!important;grid-template-columns:170px 1fr!important;gap:10px!important;padding:8px!important}
+  #pix-panel .qr-box{padding:4px!important;border:1px solid #ddd!important;gap:4px!important}
+  #pix-panel .qr-box img{width:150px!important;height:150px!important}
+  #pix-panel .qr-box .valor{font-size:14px!important;color:#a90637!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #pix-panel .qr-box .valor small{font-size:9px!important;margin-bottom:0!important}
+  #pix-panel .info h3{font-size:11px!important;margin:0 0 4px!important}
+  #pix-panel .info .row-i{margin-bottom:3px!important}
+  #pix-panel .info .row-i .l{font-size:8px!important}
+  #pix-panel .info .row-i .v{font-size:11px!important;margin-top:0!important}
+  #pix-panel .copy-block{margin-top:6px!important;padding:5px!important;background:#fff!important;border:1px dashed #a90637!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #pix-panel .copy-block .lbl{font-size:8px!important;margin-bottom:2px!important}
+  #pix-panel .copy-block .brcode{font-size:8px!important;line-height:1.15!important;max-height:none!important;overflow:visible!important;padding:3px!important;word-break:break-all}
+  #pix-panel .actions,#pix-panel .btn-copy,#pix-panel .btn-print,#pix-panel .status{display:none!important}
+  #pix-panel .instructions{margin:6px 0 0!important;padding:5px 8px!important;background:#fff!important;border-left:2px solid #999!important;color:#333!important;font-size:9px!important;line-height:1.3!important}
   a[href]:after{content:""!important}
 }
 @media(max-width:720px){
