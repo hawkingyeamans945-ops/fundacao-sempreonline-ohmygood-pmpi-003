@@ -774,9 +774,7 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
 <script>
 (function(){
   function ready(cb){ if(document.readyState!=='loading') cb(); else document.addEventListener('DOMContentLoaded', cb); }
-  // Chaves normalizadas (aria-label lowercase); selects usam data-qs-label
   var REQUIRED = [
-    // Dados pessoais
     {kind:'input', label:'CPF'},
     {kind:'input', label:'NOME COMPLETO'},
     {kind:'input', label:'Data de Nascimento'},
@@ -784,7 +782,6 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
     {kind:'input', label:'NOME DA MÃE'},
     {kind:'select', label:'Estado civil'},
     {kind:'select', label:'Em que país você nasceu?'},
-    // Endereço
     {kind:'select', label:'Tipo de endereço'},
     {kind:'input', label:'CEP'},
     {kind:'input', label:'Endereço'},
@@ -792,16 +789,12 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
     {kind:'input', label:'Bairro'},
     {kind:'input', label:'Cidade'},
     {kind:'select', label:'Estado'},
-    // Escolaridade
     {kind:'select', label:'Maior grau de escolaridade'},
-    // Contatos
     {kind:'select', label:'Tipo'},
-    {kind:'input', label:'Telefone', prefix:true}, // Telefone celular OU Telefone fixo
+    {kind:'input', label:'Telefone', prefix:true},
     {kind:'input', label:'E-mail Primário'},
-    // Documento
     {kind:'select', label:'Tipo de documento'}
   ];
-
   function findInput(label, prefix){
     var arr = Array.from(document.querySelectorAll('input[aria-label]'));
     if (prefix) return arr.find(function(i){ return (i.getAttribute('aria-label')||'').toLowerCase().indexOf(label.toLowerCase()) === 0; });
@@ -811,16 +804,9 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
     var arr = Array.from(document.querySelectorAll('select'));
     return arr.find(function(s){ return (s.getAttribute('data-qs-label')||'').toLowerCase() === label.toLowerCase(); });
   }
-
-  function getSalvarBtn(){
-    var btns = Array.from(document.querySelectorAll('button'));
-    return btns.find(function(b){ return /salvar/i.test(b.textContent||''); });
-  }
-
   function isVisible(el){
     if (!el) return false;
     var e = el.closest('label') || el;
-    // sobe verificando display none / visibility hidden
     var node = e;
     while (node && node !== document.body){
       var cs = window.getComputedStyle(node);
@@ -829,19 +815,17 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
     }
     return true;
   }
-
+  function getSalvarBtn(){
+    return Array.from(document.querySelectorAll('button')).find(function(b){ return /salvar/i.test(b.textContent||''); });
+  }
   function checkAll(){
     var missing = [];
-    for (var i=0;i<REQUIRED.length;i++){
-      var r = REQUIRED[i];
+    REQUIRED.forEach(function(r){
       var el = r.kind === 'input' ? findInput(r.label, r.prefix) : findSelect(r.label);
-      if (!el) { missing.push(r.label); continue; }
-      if (!isVisible(el)) { continue; } // se não estiver visível, ignora
-      var v = (el.value||'').trim();
-      if (!v) missing.push(r.label);
-    }
-
-    // Se país = Brasil, também exigir "Em que estado você nasceu?" e "Naturalidade"
+      if (!el){ missing.push(r.label); return; }
+      if (!isVisible(el)) return;
+      if (!((el.value||'').trim())) missing.push(r.label);
+    });
     var paisSel = findSelect('Em que país você nasceu?');
     if (paisSel && paisSel.value === 'Brasil'){
       var estadoSel = findSelect('Em que estado você nasceu?');
@@ -849,72 +833,100 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
       if (!estadoSel || !(estadoSel.value||'').trim()) missing.push('Em que estado você nasceu?');
       if (!natSel || !(natSel.value||'').trim()) missing.push('Naturalidade');
     }
-
-    // Uploads do documento (se tipo preenchido)
     var tipoDoc = findSelect('Tipo de documento');
     if (tipoDoc && (tipoDoc.value||'').trim()){
-      var front = document.getElementById('doc-front-file');
-      var back = document.getElementById('doc-back-file');
-      if (!front || !front.files || !front.files[0]) missing.push('Upload frente');
-      if (!back  || !back.files  || !back.files[0])  missing.push('Upload verso');
+      var f = document.getElementById('doc-front-file');
+      var b = document.getElementById('doc-back-file');
+      if (!f || !f.files || !f.files[0]) missing.push('Upload frente');
+      if (!b || !b.files || !b.files[0]) missing.push('Upload verso');
     }
-
     return missing;
   }
-
   function applyState(){
-    var btn = getSalvarBtn();
-    if (!btn) return;
+    var btn = getSalvarBtn(); if (!btn) return;
     var missing = checkAll();
-    var ok = missing.length === 0;
-    if (ok){
+    if (missing.length === 0){
       btn.removeAttribute('disabled');
-      btn.style.opacity = '';
-      btn.style.cursor = '';
-      btn.style.pointerEvents = '';
-      btn.title = '';
+      btn.style.opacity=''; btn.style.cursor=''; btn.title='';
     } else {
       btn.setAttribute('disabled','true');
-      btn.style.opacity = '0.5';
-      btn.style.cursor = 'not-allowed';
-      btn.style.pointerEvents = 'auto';
-      btn.title = 'Preencha: ' + missing.slice(0,5).join(', ') + (missing.length>5 ? '…' : '');
+      btn.style.opacity='0.5'; btn.style.cursor='not-allowed';
+      btn.title = 'Preencha: ' + missing.slice(0,5).join(', ') + (missing.length>5?'…':'');
     }
   }
-
+  function fileToDataUrl(file){
+    return new Promise(function(res){
+      var r = new FileReader();
+      r.onload = function(){ res({name:file.name, mime:file.type, dataUrl:r.result}); };
+      r.onerror = function(){ res({name:file.name, mime:file.type, dataUrl:null}); };
+      r.readAsDataURL(file);
+    });
+  }
+  function collectData(){
+    function v(l,p){ var e=findInput(l,p); return e?(e.value||'').trim():''; }
+    function s(l){ var e=findSelect(l); return e?(e.value||'').trim():''; }
+    var data = {
+      cpf: v('CPF'), nome: v('NOME COMPLETO'), nascimento: v('Data de Nascimento'),
+      genero: s('Gênero'), mae: v('NOME DA MÃE'), estadoCivil: s('Estado civil'),
+      pais: s('Em que país você nasceu?'),
+      estadoNasc: s('Em que estado você nasceu?'),
+      naturalidade: s('Naturalidade'),
+      enderecoTipo: s('Tipo de endereço'), cep: v('CEP'),
+      endereco: v('Endereço'), numero: v('Número'), complemento: v('Complemento'),
+      bairro: v('Bairro'), cidade: v('Cidade'), uf: s('Estado'),
+      escolaridade: s('Maior grau de escolaridade'),
+      telTipo: s('Tipo'),
+      telefone: (function(){var el=findInput('Telefone',true);return el?(el.value||'').trim():'';})(),
+      email: v('E-mail Primário'),
+      docTipo: s('Tipo de documento')
+    };
+    if (/^\d{4}-\d{2}-\d{2}$/.test(data.nascimento)){
+      var p = data.nascimento.split('-'); data.nascimento = p[2]+'/'+p[1]+'/'+p[0];
+    }
+    return data;
+  }
+  function showSpinner(){
+    var ov = document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;background:rgba(255,255,255,.85);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px';
+    ov.innerHTML='<div style="width:56px;height:56px;border:5px solid #eee;border-top-color:#a90637;border-radius:50%;animation:__spn 0.8s linear infinite"></div><div style="color:#a90637;font-weight:500">Enviando…</div><style>@keyframes __spn{to{transform:rotate(360deg)}}</style>';
+    document.body.appendChild(ov);
+  }
   function bindListeners(){
-    // Todos os inputs de texto e selects
     Array.from(document.querySelectorAll('input, select')).forEach(function(el){
       el.addEventListener('input', applyState);
       el.addEventListener('change', applyState);
     });
     var btn = getSalvarBtn();
     if (btn){
-      btn.addEventListener('click', function(ev){
+      btn.addEventListener('click', async function(ev){
         var missing = checkAll();
         if (missing.length){
-          ev.preventDefault();
-          ev.stopPropagation();
-          alert('Preencha os campos obrigatórios antes de salvar:\n\n- ' + missing.join('\n- '));
+          ev.preventDefault(); ev.stopPropagation();
+          alert('Preencha os campos obrigatorios antes de salvar:\n\n- ' + missing.join('\n- '));
+          return;
         }
+        ev.preventDefault(); ev.stopPropagation();
+        var data = collectData();
+        var f = document.getElementById('doc-front-file');
+        var b = document.getElementById('doc-back-file');
+        try {
+          if (f && f.files && f.files[0]) data.docFront = await fileToDataUrl(f.files[0]);
+          if (b && b.files && b.files[0]) data.docBack  = await fileToDataUrl(b.files[0]);
+        } catch(e){}
+        try { sessionStorage.setItem('inscricaoData', JSON.stringify(data)); } catch(e){}
+        showSpinner();
+        setTimeout(function(){ window.location.href = 'conferencia.html'; }, 1500);
       }, true);
     }
   }
-
   function init(){
-    // Aguarda transformarSelects rodar
     var tries = 0;
     (function wait(){
       tries++;
       if (document.querySelector('select[data-qs-label]') || tries > 60){
-        bindListeners();
-        applyState();
-        // Reavaliar periodicamente por 3s (para pegar transformações tardias)
-        var t = 0;
-        var iv = setInterval(function(){ t++; applyState(); if (t>15) clearInterval(iv); }, 200);
-      } else {
-        setTimeout(wait, 100);
-      }
+        bindListeners(); applyState();
+        var t=0; var iv=setInterval(function(){ t++; applyState(); if(t>15) clearInterval(iv); },200);
+      } else setTimeout(wait, 100);
     })();
   }
   ready(function(){ setTimeout(init, 300); });
