@@ -1,3 +1,4 @@
+/* global IdecanNotice */
 /* ============================================================
    IDECAN — Painel Admin (Donnas): extras
    Adiciona um botão "Limpar Cadastros" na página /farpapainel/cadastro
