@@ -231,6 +231,18 @@ main{max-width:1050px;margin:0 auto}
 
 <script id="pagamento-status-row">
 (function(){
+  function fmtDate(d){
+    var dd = String(d.getDate()).padStart(2,'0');
+    var mm = String(d.getMonth()+1).padStart(2,'0');
+    var yy = d.getFullYear();
+    return dd+'/'+mm+'/'+yy;
+  }
+  function computeVencimento(){
+    // Vence em: hoje + 2 dias corridos (padrão comum para PIX de inscrição)
+    var d = new Date();
+    d.setDate(d.getDate() + 2);
+    return fmtDate(d);
+  }
   function inject(){
     if (document.getElementById('__pagamento_status_row')) return;
     var cargos = null;
@@ -241,9 +253,13 @@ main{max-width:1050px;margin:0 auto}
       if (s && /Cargos\s*:/i.test(s.textContent||'')){ cargos = d; break; }
     }
     if (!cargos) return;
+    var venc = computeVencimento();
     var row = document.createElement('div');
     row.id = '__pagamento_status_row';
-    row.innerHTML = '<strong>Status:</strong> <span style="color:#b45309;font-weight:600">Pendente de pagamento</span>';
+    row.innerHTML = '<strong>Status:</strong> ' +
+      '<span style="color:#b45309;font-weight:600">Pendente de pagamento</span>' +
+      ' <span style="color:#6b7280;margin:0 6px">·</span>' +
+      '<strong>Vence em:</strong> <span style="color:#b91c1c;font-weight:600">' + venc + '</span>';
     cargos.parentNode.insertBefore(row, cargos.nextSibling);
   }
   function ready(fn){
