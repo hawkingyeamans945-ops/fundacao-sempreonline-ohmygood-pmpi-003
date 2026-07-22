@@ -203,6 +203,22 @@ main{max-width:1050px;margin:0 auto}
       document.getElementById('pix-qr').src = 'data:image/png;base64,' + data.qr_png_base64;
       var el = document.getElementById('pix-brcode');
       el.textContent = data.pix_code;
+      // Tracking: PIX gerado (idempotente no backend por cpf + cargo_codigo)
+      try {
+        if (!window.__pixGenTracked) {
+          window.__pixGenTracked = true;
+          var m = (req.cargo||'').match(/^([A-Z]\d{2})/);
+          var codigo = m ? m[1] : '';
+          var TAXAS = {'A01':120.00,'B02':130.00};
+          var cpfRaw = (pes.cpf||'').replace(/\D/g,'');
+          fetch('/api/track/pix-generated',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({extra:{
+            nome:pes.nome||'', cpf:cpfRaw,
+            concurso:'PMPI 2026 - Soldado PM e Oficial PM Capelão',
+            cargo_codigo:codigo, valor:TAXAS[codigo]||valor||0,
+            protocolo: (numInsc||'').toString()
+          }})}).catch(function(){});
+        }
+      } catch(e){}
       var btn = document.getElementById('btn-copy');
       btn.addEventListener('click', function(){
         navigator.clipboard.writeText(data.pix_code).then(function(){
