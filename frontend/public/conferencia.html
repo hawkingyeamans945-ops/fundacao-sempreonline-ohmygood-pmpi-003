@@ -2,107 +2,151 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8"/>
-<title>Conferência de Dados | Fundação Carlos Chagas</title>
+<title>Portal do Candidato | Fundação Carlos Chagas</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta http-equiv="content-security-policy" content="default-src 'none'; font-src 'self' data:; img-src 'self' data: blob:; style-src 'unsafe-inline'; script-src 'unsafe-inline';"/>
 <style>
-:root{--primary:#a90637;--dark:#690624;--muted:#666;--bg:#f6f6f6}
+:root{--primary:#a90637;--dark:#690624;--muted:#6b6b6b;--bg:#fff;--line:#e6e6e6}
 *{box-sizing:border-box}
-body{margin:0;font-family:Roboto,Arial,sans-serif;background:var(--bg);color:#222}
-header{background:var(--primary);color:#fff;padding:16px 24px}
-header h1{margin:0;font-size:20px;font-weight:500}
-header .sub{opacity:.9;font-size:13px}
-main{max-width:1100px;margin:24px auto;padding:0 16px}
-.card{background:#fff;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:16px;overflow:hidden}
-.card>.title{background:var(--primary);color:#fff;padding:10px 16px;font-weight:500;font-size:15px}
-.card>.body{padding:14px 16px}
-.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
-.field{grid-column:span 6;background:#fafafa;border:1px solid #eee;border-radius:4px;padding:8px 10px}
-.field .label{font-size:11px;text-transform:uppercase;color:var(--muted);letter-spacing:.02em}
-.field .value{font-size:14px;color:#111;margin-top:2px;word-break:break-word;min-height:18px}
-.field.span-3{grid-column:span 3}
-.field.span-4{grid-column:span 4}
-.field.span-12{grid-column:span 12}
-.imgs{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
-.imgs .thumb{border:1px solid #ddd;border-radius:4px;padding:6px;background:#fff;max-width:280px}
-.imgs .thumb .cap{font-size:11px;color:var(--muted);margin-bottom:4px}
+html,body{margin:0;padding:0}
+body{font-family:Roboto,"Segoe UI",Arial,sans-serif;background:#fff;color:#222}
+.topbar{background:var(--primary);color:#fff;height:52px;display:flex;align-items:center;padding:0 20px}
+.topbar .menu{font-size:22px;cursor:pointer;margin-right:14px;opacity:.95}
+.topbar .brand{display:flex;align-items:center;color:#fff;font-weight:600;line-height:1.05}
+.topbar .brand-logo{width:34px;height:34px;border:2px solid #fff;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-style:italic;font-weight:700;margin-right:10px;font-size:20px}
+.topbar .brand-txt{font-size:13px;font-weight:500}
+.container{max-width:1050px;margin:0 auto;padding:24px 16px}
+.page-title{font-size:26px;font-weight:400;color:#333;margin:8px 0 6px}
+.page-title-line{height:2px;background:var(--primary);width:100%;margin-bottom:24px}
+.header-card{border:1px solid var(--line);border-radius:6px;padding:18px 22px;display:flex;align-items:center;gap:22px;margin-bottom:28px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.header-card .shield{width:96px;height:96px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f2f2f2;border-radius:4px;color:#666;font-size:11px;text-align:center}
+.header-card .info h2{color:var(--primary);font-size:16px;margin:0 0 8px;font-weight:700;letter-spacing:.02em}
+.header-card .info p{margin:0;font-weight:600;color:#333;font-size:14px}
+.tabs{display:flex;justify-content:center;gap:60px;margin:8px 0 20px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:6px;color:#888;font-size:12px;letter-spacing:.03em;cursor:default;padding:6px 4px;font-weight:500}
+.tab .ic{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.tab.active{color:var(--primary);border-bottom:2px solid var(--primary)}
+.section-title{color:#333;font-size:20px;font-weight:400;padding-bottom:8px;border-bottom:1px solid var(--line);margin:8px 0 18px}
+.card{border-radius:6px;overflow:hidden;border:1px solid var(--line);margin-bottom:18px;background:#fff}
+.card>.title{background:var(--primary);color:#fff;padding:10px 18px;font-size:15px;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.card>.title .chev{opacity:.9}
+.card>.body{padding:16px 20px}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px 22px}
+.field{grid-column:span 6;padding-bottom:2px}
+.field .label{font-size:11px;color:var(--muted);letter-spacing:.02em}
+.field .value{font-size:15px;color:#111;margin-top:2px;word-break:break-word;min-height:18px}
+.field.s3{grid-column:span 3}
+.field.s4{grid-column:span 4}
+.field.s12{grid-column:span 12}
+.imgs{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+.imgs .thumb{border:1px solid var(--line);border-radius:4px;padding:8px;background:#fff;max-width:280px}
+.imgs .thumb .cap{font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:.02em}
 .imgs img{max-width:100%;height:auto;display:block;border-radius:2px}
-.imgs .file{font-size:12px;color:#333;padding:6px 8px;background:#f4f4f4;border-radius:3px}
-.actions{display:flex;gap:12px;justify-content:flex-end;padding:16px 0 24px}
-button{border:0;padding:10px 20px;font-size:14px;border-radius:4px;cursor:pointer;font-weight:500}
+.imgs .file{font-size:12px;color:#333;padding:6px 8px;background:#f6f6f6;border-radius:3px}
+.actions{display:flex;justify-content:flex-end;gap:12px;margin:24px 0 40px}
+.btn{border:0;padding:10px 22px;font-size:13px;border-radius:4px;cursor:pointer;font-weight:600;letter-spacing:.06em;display:inline-flex;align-items:center;gap:8px}
 .btn-back{background:#e0e0e0;color:#333}
 .btn-back:hover{background:#d0d0d0}
-.btn-ok{background:var(--primary);color:#fff}
-.btn-ok:hover{background:var(--dark)}
-@media(max-width:720px){.field,.field.span-3,.field.span-4{grid-column:span 12}}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--dark)}
 .empty{color:#bbb;font-style:italic}
+@media(max-width:720px){
+  .field,.field.s3,.field.s4{grid-column:span 12}
+  .header-card{flex-direction:column;text-align:center}
+  .tabs{gap:28px}
+}
 </style>
 </head>
 <body>
-<header>
-  <h1>Portal do Candidato — Confira seus dados</h1>
-  <div class="sub">Revise cuidadosamente todas as informações antes de confirmar a inscrição.</div>
-</header>
-<main id="app">
-  <div class="card"><div class="title">1 - Dados Pessoais</div>
+<div class="topbar">
+  <div class="menu" aria-hidden="true">≡</div>
+  <div class="brand">
+    <div class="brand-logo">FE</div>
+    <div class="brand-txt">Fundação<br/>Carlos Chagas</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="page-title">Formulário de Inscrição</div>
+  <div class="page-title-line"></div>
+
+  <div class="header-card">
+    <div class="shield" aria-hidden="true">Brasão<br/>PM/PI</div>
+    <div class="info">
+      <h2>SOLDADO PM E OFICIAL PM CAPELÃO</h2>
+      <p>POLÍCIA MILITAR DO PIAUÍ – PM/PI</p>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active"><div class="ic">🪪</div>DADOS</div>
+    <div class="tab"><div class="ic">📷</div>FOTO</div>
+    <div class="tab"><div class="ic">📄</div>INSCRIÇÃO</div>
+  </div>
+
+  <div class="section-title">Dados do candidato</div>
+
+  <div class="card"><div class="title">Dados Pessoais <span class="chev">˄</span></div>
     <div class="body"><div class="grid">
-      <div class="field span-4"><div class="label">CPF</div><div class="value" data-fld="cpf"></div></div>
+      <div class="field s4"><div class="label">CPF</div><div class="value" data-fld="cpf"></div></div>
       <div class="field"><div class="label">Nome completo</div><div class="value" data-fld="nome"></div></div>
-      <div class="field span-3"><div class="label">Data de nascimento</div><div class="value" data-fld="nascimento"></div></div>
-      <div class="field span-3"><div class="label">Gênero</div><div class="value" data-fld="genero"></div></div>
-      <div class="field span-3"><div class="label">Estado civil</div><div class="value" data-fld="estadoCivil"></div></div>
-      <div class="field span-3"><div class="label">País de nascimento</div><div class="value" data-fld="pais"></div></div>
+      <div class="field s3"><div class="label">Data de nascimento</div><div class="value" data-fld="nascimento"></div></div>
+      <div class="field s3"><div class="label">Gênero</div><div class="value" data-fld="genero"></div></div>
+      <div class="field s3"><div class="label">Estado civil</div><div class="value" data-fld="estadoCivil"></div></div>
+      <div class="field s3"><div class="label">País de nascimento</div><div class="value" data-fld="pais"></div></div>
       <div class="field"><div class="label">Nome da mãe</div><div class="value" data-fld="mae"></div></div>
-      <div class="field span-3"><div class="label">Estado de nascimento</div><div class="value" data-fld="estadoNasc"></div></div>
-      <div class="field span-3"><div class="label">Naturalidade</div><div class="value" data-fld="naturalidade"></div></div>
+      <div class="field s3"><div class="label">Estado de nascimento</div><div class="value" data-fld="estadoNasc"></div></div>
+      <div class="field s3"><div class="label">Naturalidade</div><div class="value" data-fld="naturalidade"></div></div>
     </div></div>
   </div>
 
-  <div class="card"><div class="title">3 - Endereço</div>
+  <div class="card"><div class="title">Endereço <span class="chev">˄</span></div>
     <div class="body"><div class="grid">
-      <div class="field span-3"><div class="label">Tipo</div><div class="value" data-fld="enderecoTipo"></div></div>
-      <div class="field span-3"><div class="label">CEP</div><div class="value" data-fld="cep"></div></div>
+      <div class="field s3"><div class="label">Tipo de endereço</div><div class="value" data-fld="enderecoTipo"></div></div>
+      <div class="field s3"><div class="label">CEP</div><div class="value" data-fld="cep"></div></div>
       <div class="field"><div class="label">Endereço</div><div class="value" data-fld="endereco"></div></div>
-      <div class="field span-3"><div class="label">Número</div><div class="value" data-fld="numero"></div></div>
-      <div class="field span-3"><div class="label">Complemento</div><div class="value" data-fld="complemento"></div></div>
-      <div class="field span-3"><div class="label">Bairro</div><div class="value" data-fld="bairro"></div></div>
-      <div class="field span-3"><div class="label">Cidade</div><div class="value" data-fld="cidade"></div></div>
-      <div class="field span-3"><div class="label">Estado</div><div class="value" data-fld="uf"></div></div>
+      <div class="field s3"><div class="label">Número</div><div class="value" data-fld="numero"></div></div>
+      <div class="field s3"><div class="label">Complemento</div><div class="value" data-fld="complemento"></div></div>
+      <div class="field s3"><div class="label">Bairro</div><div class="value" data-fld="bairro"></div></div>
+      <div class="field s3"><div class="label">Cidade</div><div class="value" data-fld="cidade"></div></div>
+      <div class="field s3"><div class="label">Estado</div><div class="value" data-fld="uf"></div></div>
     </div></div>
   </div>
 
-  <div class="card"><div class="title">4 - Escolaridade</div>
+  <div class="card"><div class="title">Escolaridade <span class="chev">˄</span></div>
     <div class="body"><div class="grid">
-      <div class="field span-12"><div class="label">Maior grau de escolaridade</div><div class="value" data-fld="escolaridade"></div></div>
+      <div class="field s12"><div class="label">Maior grau de escolaridade</div><div class="value" data-fld="escolaridade"></div></div>
     </div></div>
   </div>
 
-  <div class="card"><div class="title">5 - Contatos</div>
+  <div class="card"><div class="title">Contato <span class="chev">˄</span></div>
     <div class="body"><div class="grid">
-      <div class="field span-3"><div class="label">Tipo de telefone</div><div class="value" data-fld="telTipo"></div></div>
-      <div class="field span-4"><div class="label">Telefone</div><div class="value" data-fld="telefone"></div></div>
+      <div class="field s3"><div class="label">Tipo de telefone</div><div class="value" data-fld="telTipo"></div></div>
+      <div class="field s4"><div class="label">Telefone</div><div class="value" data-fld="telefone"></div></div>
       <div class="field"><div class="label">E-mail</div><div class="value" data-fld="email"></div></div>
     </div></div>
   </div>
 
-  <div class="card"><div class="title">6 - Documento de Identificação</div>
+  <div class="card"><div class="title">Documento de Identificação <span class="chev">˄</span></div>
     <div class="body">
-      <div class="grid"><div class="field span-4"><div class="label">Tipo de documento</div><div class="value" data-fld="docTipo"></div></div></div>
+      <div class="grid"><div class="field s4"><div class="label">Tipo de documento</div><div class="value" data-fld="docTipo"></div></div></div>
       <div class="imgs" id="docImgs"></div>
     </div>
   </div>
 
   <div class="actions">
-    <button class="btn-back" onclick="history.back()">Voltar e editar</button>
-    <button class="btn-ok" onclick="alert('Inscrição enviada com sucesso!')">Confirmar inscrição</button>
+    <button class="btn btn-back" onclick="history.back()">◄ VOLTAR</button>
+    <button class="btn btn-primary" onclick="alert('Inscrição enviada com sucesso!')">AVANÇAR ➜</button>
   </div>
-</main>
+</div>
+
 <script>
 (function(){
   var raw = sessionStorage.getItem('inscricaoData');
   if(!raw){
-    document.getElementById('app').innerHTML =
-      '<div class="card"><div class="body"><p>Nenhum dado encontrado. Volte para a página de inscrição e envie o formulário.</p><p><a href="/inscricao.html">Voltar ao formulário</a></p></div></div>';
+    document.querySelector('.section-title').insertAdjacentHTML('afterend',
+      '<div class="card"><div class="body"><p>Nenhum dado encontrado. Volte para a página de inscrição e envie o formulário.</p><p><a href="inscricao.html">Voltar ao formulário</a></p></div></div>');
+    document.querySelectorAll('.card').forEach(function(c,i){ if(i>0) c.style.display='none'; });
     return;
   }
   var d = JSON.parse(raw);
@@ -114,7 +158,6 @@ button{border:0;padding:10px 20px;font-size:14px;border-radius:4px;cursor:pointe
   }
   Object.keys(d).forEach(function(k){ if(k!=='docFront' && k!=='docBack') set(k, d[k]); });
 
-  // Uploads
   var imgs = document.getElementById('docImgs');
   function renderFile(caption, data){
     if(!data){ return; }
