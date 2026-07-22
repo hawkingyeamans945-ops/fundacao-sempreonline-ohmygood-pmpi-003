@@ -162,137 +162,74 @@ aside.q-drawer,.q-drawer,.q-drawer--left,.q-drawer--right,#rybena-sidebar,.fcc-c
 body,html{overflow-x:hidden}
 </style>
 
-<style id="hide-original-fields-req">
-.q-tabs, .q-tab-panels, .q-tab-panel { display:none !important; }
-.q-expansion-item, [aria-label="Atualizar dados cadastrais"] { display:none !important; }
-#req-form{max-width:1050px;margin:16px auto 40px;padding:0 20px;font-family:Roboto,Arial,sans-serif}
-#req-form .card{border-radius:6px;overflow:hidden;border:1px solid #e6e6e6;margin-bottom:18px;background:#fff}
-#req-form .card>.title{background:#a90637;color:#fff;padding:10px 18px;font-size:15px;font-weight:500}
-#req-form .card>.body{padding:18px 22px}
-#req-form .field{margin-bottom:18px}
-#req-form .field:last-child{margin-bottom:0}
-#req-form .field .label{font-size:14px;font-weight:600;color:#333;margin-bottom:6px;display:block}
-#req-form .field .label .req{color:#a90637;margin-left:4px}
-#req-form select{width:100%;padding:10px 34px 10px 12px;border:1.5px solid #a90637;border-radius:4px;font-size:14px;font-family:inherit;color:#333;background:#fff;appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%23a90637'><path d='M7 10l5 5 5-5z'/></svg>");background-repeat:no-repeat;background-position:right 10px center}
-#req-form select:focus{outline:none;border-color:#690624;box-shadow:0 0 0 2px rgba(169,6,55,.15)}
-#req-form .subheading{font-size:14px;font-weight:600;color:#333;margin-bottom:12px}
-#req-form .checkbox-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #e6e6e6}
-#req-form .checkbox-item:last-child{border-bottom:0}
-#req-form .cb{width:22px;height:22px;border:2px solid #999;border-radius:3px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#fff}
-#req-form .cb.checked{background:#a90637;border-color:#a90637}
-#req-form .cb.checked::after{content:"✓";color:#fff;font-weight:700;font-size:16px;line-height:1}
-#req-form .txt{font-size:13px;color:#333;line-height:1.55;text-align:justify;flex:1;cursor:pointer}
-#req-form .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:8px}
-#req-form .btn{border:0;padding:11px 26px;font-size:13px;border-radius:4px;cursor:pointer;font-weight:600;letter-spacing:.06em}
-#req-form .btn-back{background:#e0e0e0;color:#333}
-#req-form .btn-primary{background:#a90637;color:#fff}
-#req-form .btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+<style id="hide-original-comp">
+.q-tabs,.q-tab-panels,.q-tab-panel,.q-expansion-item,[aria-label="Atualizar dados cadastrais"]{display:none!important}
+#comp{max-width:1050px;margin:16px auto 40px;padding:0 20px;font-family:Roboto,Arial,sans-serif}
+#comp .card{border-radius:6px;overflow:hidden;border:1px solid #e6e6e6;margin-bottom:18px;background:#fff}
+#comp .card>.title{background:#a90637;color:#fff;padding:10px 18px;font-size:15px;font-weight:500}
+#comp .card>.body{padding:18px 22px}
+#comp .row-item{margin-bottom:14px}
+#comp .row-item:last-child{margin-bottom:0}
+#comp .q{font-size:14px;font-weight:600;color:#333;margin-bottom:2px}
+#comp .a{font-size:15px;color:#111}
+#comp ul{margin:0;padding-left:22px;color:#333;font-size:13px;line-height:1.55;text-align:justify}
+#comp ul li{margin-bottom:8px}
+#comp .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:8px}
+#comp .btn{border:0;padding:11px 26px;font-size:13px;border-radius:4px;cursor:pointer;font-weight:600;letter-spacing:.06em}
+#comp .btn-back{background:#e0e0e0;color:#333}
+#comp .btn-primary{background:#a90637;color:#fff}
+#comp .empty{color:#bbb;font-style:italic}
 </style>
 <script>
 (function(){
+  var d = {}; try{ d = JSON.parse(sessionStorage.getItem('requerimentoData')||'{}'); }catch(e){}
+  function esc(s){ return String(s==null?'':s); }
+  var declaracoes = [];
+  if(d.dec1) declaracoes.push('Declaro, sob as penas da Lei, que concordo com os termos do Edital nº 01/2026 e autorizo o tratamento dos meus dados pessoais para execução do concurso, incluindo aplicação dos critérios de avaliação e seleção, divulgação de nomes, números de inscrição, notas e critérios de desempate, nos termos da LGPD (Lei nº 13.709/2018).');
+  if(d.dec2) declaracoes.push('Declaro, sob as penas da Lei, que os dados informados são verdadeiros e que conheço e aceito todas as regras do Edital nº 01/2026 de Abertura de Inscrições.');
+
   var html = ''
-    + '<div id="req-form">'
+    + '<div id="comp">'
     + '<div class="card"><div class="title">Formulário de inscrição</div><div class="body">'
-      + '<div class="field"><label class="label">Cargos: <span class="req">*</span></label>'
-        + '<select id="cargo" data-req>'
-        + '<option value="">Escolha um cargo</option>'
-        + '<option>A01 - Praça PM (Soldado PM)</option>'
-        + '<option>B02 - Oficial Capelão PM (1º Tenente QOCPM)</option>'
-        + '</select></div>'
-      + '<div class="field"><label class="label">Exerceu efetivamente a função de jurado, nos termos do art. 440 do CPP, no período entre a Lei nº 11.689/2008 e o término das inscrições deste concurso? <span class="req">*</span></label>'
-        + '<select id="jurado" data-req><option value="">Escolha uma opção</option><option>Sim</option><option>Não</option></select></div>'
-      + '<div class="field"><label class="label">Caso alguma etapa do concurso seja realizada em um sábado, haverá impedimento para sua participação por motivos religiosos? <span class="req">*</span></label>'
-        + '<select id="sabado" data-req><option value="">Escolha uma opção</option><option>Sim</option><option>Não</option></select></div>'
-    + '</div></div>'
-    + '<div class="card"><div class="title">Cor/Raça</div><div class="body">'
-      + '<div class="field"><label class="label">Qual a sua Cor/Raça? <span class="req">*</span></label>'
-        + '<select id="raca" data-req><option value="">Escolha uma opção</option><option>Amarela</option><option>Branca</option><option>Indígena</option><option>Parda</option><option>Preta</option></select></div>'
+      + row('Cargo:', d.cargo)
+      + row('Exerceu efetivamente a função de jurado, nos termos do art. 440 do CPP, no período entre a Lei nº 11.689/2008 e o término das inscrições deste concurso?', d.jurado)
+      + row('Caso alguma etapa do concurso seja realizada em um sábado, haverá impedimento para sua participação por motivos religiosos?', d.sabado)
+      + row('Qual a sua Cor/Raça?', d.raca)
     + '</div></div>'
     + '<div class="card"><div class="title">Candidatos com Deficiência</div><div class="body">'
-      + '<div class="field"><label class="label">Candidato com Deficiência: <span class="req">*</span></label>'
-        + '<select id="pcd" data-req><option value="">Escolha uma opção</option><option>Sim</option><option>Não</option></select></div>'
-      + '<div class="field"><label class="label">Necessita de condição específica para realizar a prova? <span class="req">*</span></label>'
-        + '<select id="condicao" data-req><option value="">Escolha uma opção</option><option>Sim</option><option>Não</option></select></div>'
+      + row('Candidato com Deficiência:', d.pcd)
+      + row('Necessita de condição específica para realizar a prova?', d.condicao)
     + '</div></div>'
     + '<div class="card"><div class="title">Requerimento</div><div class="body">'
-      + '<div class="subheading">Selecione os 2 itens</div>'
-      + '<div class="checkbox-item"><div class="cb" data-cb="dec1"></div><div class="txt" data-target="dec1">Declaro, sob as penas da Lei, que concordo com os termos do Edital nº 01/2026 e autorizo o tratamento dos meus dados pessoais para execução do concurso, incluindo aplicação dos critérios de avaliação e seleção, divulgação de nomes, números de inscrição, notas e critérios de desempate, nos termos da LGPD (Lei nº 13.709/2018).</div></div>'
-      + '<div class="checkbox-item"><div class="cb" data-cb="dec2"></div><div class="txt" data-target="dec2">Declaro, sob as penas da Lei, que os dados informados são verdadeiros e que conheço e aceito todas as regras do Edital nº 01/2026 de Abertura de Inscrições.</div></div>'
+      + (declaracoes.length ? '<ul>' + declaracoes.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('') + '</ul>' : '<div class="empty">— nenhuma declaração marcada —</div>')
     + '</div></div>'
     + '<div class="actions">'
-      + '<button class="btn btn-back" type="button">◄ VOLTAR</button>'
-      + '<button class="btn btn-primary" id="btn-avancar" type="button" disabled>AVANÇAR ➜</button>'
+      + '<button class="btn btn-back" type="button" onclick="history.back()">◄ VOLTAR</button>'
+      + '<button class="btn btn-primary" type="button" onclick="alert(\'Próxima etapa em construção.\')">CONCLUIR ➜</button>'
     + '</div>'
     + '</div>';
 
+  function row(q,a){
+    var val = (a==null||a==='') ? '<span class="empty">— não informado —</span>' : esc(a);
+    return '<div class="row-item"><div class="q">'+esc(q)+'</div><div class="a">'+val+'</div></div>';
+  }
+
   function insertHtml(){
-    if(document.getElementById('req-form')) return true;
-    var candidates = document.querySelectorAll('.text-subtitleNovo, .text-subtitle1Novo');
-    var anchor = null;
+    if(document.getElementById('comp')) return true;
+    var candidates = document.querySelectorAll('.text-subtitleNovo,.text-subtitle1Novo');
+    var anchor=null;
     for(var i=0;i<candidates.length;i++){
-      if (/capel|pia[uú]|policia|pol[íi]cia/i.test(candidates[i].textContent||'')){ anchor = candidates[i]; break; }
+      if(/capel|pia[uú]|policia|pol[íi]cia/i.test(candidates[i].textContent||'')){ anchor=candidates[i]; break; }
     }
     if(!anchor) return false;
     var card = anchor.closest('.q-card') || anchor.parentElement.parentElement;
     if(!card) return false;
     card.insertAdjacentHTML('afterend', html);
-    bind();
     return true;
-  }
-  function bind(){
-    var saved = {}; try{ saved = JSON.parse(sessionStorage.getItem('requerimentoData')||'{}'); }catch(e){}
-    var selects = document.querySelectorAll('#req-form select[data-req]');
-    selects.forEach(function(s){ if(saved[s.id]) s.value = saved[s.id]; s.addEventListener('change', updateState); });
-    document.querySelectorAll('#req-form .cb').forEach(function(cb){
-      if(saved[cb.getAttribute('data-cb')]) cb.classList.add('checked');
-      cb.addEventListener('click', function(){ cb.classList.toggle('checked'); updateState(); });
-    });
-    document.querySelectorAll('#req-form .txt[data-target]').forEach(function(t){
-      t.addEventListener('click', function(){
-        var cb = document.querySelector('#req-form [data-cb="'+t.getAttribute('data-target')+'"]');
-        if(cb){ cb.classList.toggle('checked'); updateState(); }
-      });
-    });
-    var btn = document.getElementById('btn-avancar');
-    var back = document.querySelector('#req-form .btn-back');
-    if(back) back.addEventListener('click', function(){ history.back(); });
-    btn.addEventListener('click', function(){
-      if(!isValid()) return;
-      var data = {};
-      selects.forEach(function(s){ data[s.id]=s.value; });
-      document.querySelectorAll('#req-form .cb').forEach(function(cb){ data[cb.getAttribute('data-cb')] = cb.classList.contains('checked'); });
-      try{ sessionStorage.setItem('requerimentoData', JSON.stringify(data)); }catch(e){}
-      var ov=document.createElement('div');
-      ov.style.cssText='position:fixed;inset:0;background:rgba(255,255,255,.85);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px';
-      ov.innerHTML='<div style="width:56px;height:56px;border:5px solid #eee;border-top-color:#a90637;border-radius:50%;animation:__spn 0.8s linear infinite"></div><div style="color:#a90637;font-weight:500">Enviando…</div><style>@keyframes __spn{to{transform:rotate(360deg)}}</style>';
-      document.body.appendChild(ov);
-      setTimeout(function(){
-        ov.remove();
-        // Modal customizado
-        var mod=document.createElement('div');
-        mod.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:100000;display:flex;align-items:center;justify-content:center;font-family:Roboto,Arial,sans-serif';
-        mod.innerHTML='<div style="background:#fff;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.2);min-width:380px;max-width:520px;padding:32px 28px 20px;position:relative"><div style="font-size:17px;color:#333;margin-bottom:22px;padding-right:24px">Inscrição realizada com sucesso!</div><div style="text-align:right"><button id="__ok" style="background:#a90637;color:#fff;border:0;padding:10px 26px;border-radius:4px;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.05em">OK</button></div></div>';
-        document.body.appendChild(mod);
-        var done=false;
-        function go(){ if(done) return; done=true; window.location.href='comprovante.html'; }
-        document.getElementById('__ok').addEventListener('click', go);
-        setTimeout(go, 5000);
-      }, 2000);
-    });
-    updateState();
-  }
-  function isValid(){
-    var selects = document.querySelectorAll('#req-form select[data-req]');
-    for(var i=0;i<selects.length;i++){ if(!selects[i].value) return false; }
-    return document.querySelectorAll('#req-form .cb.checked').length === 2;
-  }
-  function updateState(){
-    var btn = document.getElementById('btn-avancar'); if(!btn) return;
-    btn.disabled = !isValid();
   }
   function tick(){ insertHtml(); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', tick);
   else tick();
-  [200,500,1000,2000,3500].forEach(function(t){ setTimeout(tick, t); });
+  [200,500,1000,2000,3500].forEach(function(t){ setTimeout(tick,t); });
 })();
 </script>
