@@ -1,0 +1,45 @@
+{
+  "summary": "Testado inscricao.html (viewport 1440x900). SUCESSO parcial: (1) Campo 'Confirme o CPF' foi removido corretamente (input count=0). (2) Regressões OK: 'Confirme o e-mail' ausente, botões 'Adicionar' removidos, máscara CEP + ViaCEP funcionando (01001-000 => Praça da Sé, Sé, São Paulo), máscara telefone celular '(11) 98765-4321' funcionando, select Tipo (Tel. Fixo/Tel. Celular) funcionando. (3) FALHA no layout compacto: NOME COMPLETO e NOME DA MÃE ainda ocupam 100% da largura (deveriam ser 66% e 50% respectivamente); GÊNERO ocupa 100% de seu container isolado. Root cause: a tag <style id='layout-fix'> mencionada no review request NÃO foi injetada no HTML; portanto as classes col-md-6 e col-md-8 (aplicadas via JS pelo ajustarLayoutDadosPessoais) não têm regras CSS correspondentes no framework Quasar - só existem regras para col-md-2/3/4/9/12.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Seção 1 - Nome Completo", "issue": "Classe col-md-8 aplicada ao <label> mas SEM regra CSS correspondente. Label renderiza com width=970px (100%) em vez de ~66%. Falta a tag <style id='layout-fix'> no <head>.", "selector": "input[aria-label='NOME COMPLETO']", "priority": "HIGH"},
+      {"component": "Seção 1 - Nome da Mãe", "issue": "Classe col-md-6 aplicada ao <label> mas SEM regra CSS correspondente. Label renderiza com width=962px (100%) em vez de ~50%.", "selector": "input[aria-label='NOME DA MÃE']", "priority": "HIGH"},
+      {"component": "Seção 1 - Gênero", "issue": "col-md-3 aplicado mas o <label> do Gênero está dentro de um <div> wrapper isolado (não é um .row), então o col-md-3 não tem efeito na compactação. offsetWidth=313px, mas pai=313px => 100% do container. Precisa ajustar seletor DOM: o pai do label do Gênero deveria ser um .row para participar do grid, ou o script deve aplicar col-md-* no ancestor correto.", "selector": "select[data-qs-label='Gênero']", "priority": "HIGH"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Seção 1 - Dados Pessoais (1440x900)", "issues": ["Layout ainda NÃO está compacto conforme solicitado. Nome Completo e Nome da Mãe cada um em uma linha inteira. Objetivo era: linha 1: CPF(33%) + Nome Completo(66%); linha 2: Data(25%) + Gênero(25%) + Estado Civil(25%) + País(25%); linha 3: Nome da Mãe(50%). Atualmente as três linhas mais críticas estão erradas."]}
+    ]
+  },
+  "test_report_links": ["/app/test_reports/inscricao_secao1_1440.jpg"],
+  "action_items": [
+    "URGENTE: Injetar de fato a tag <style id='layout-fix'> no <head> de /app/frontend/public/inscricao.html (e /app/frontend/build/inscricao.html). O conteúdo deve incluir ao menos: @media (min-width:1024px){.row>.col-md-6{width:50%!important;height:auto;flex:0 0 auto;min-width:0;max-width:100%}.row>.col-md-8{width:66.6667%!important;height:auto;flex:0 0 auto;min-width:0;max-width:100%}} — pode adicionar também col-md-1/5/7/10/11 por completude. O !important é útil pois o CSS-in-JS do Quasar pode conflitar.",
+    "Para o campo Gênero: investigar por que o <label> do Gênero está envolto num <div> extra (parent sem class .row). Uma opção é fazer o script ajustarLayoutDadosPessoais aplicar as classes col-md-* nesse ancestor <div> em vez do <label>, quando o pai imediato não for uma .row. Alternativamente, remover o wrapper extra do Gênero para que ele fique como sibling direto dos outros campos (Data/Estado Civil/País) dentro da mesma .row.",
+    "Revalidar em viewport 1440x900 após correção: esperado widthPct: CPF=33, Nome Completo=66, Data=25, Gênero=25, Estado Civil=25, País=25, Nome da Mãe=50."
+  ],
+  "critical_code_review_comments": [
+    "O script /app/frontend/public/inscricao.html linhas 599-636 (ajustarLayoutDadosPessoais) só reatribui classes ao closest('label') do input/select. Não valida se o parent do label é uma .row - risco de aplicar col-md-* em label cujo pai não é grid (caso Gênero).",
+    "O sibling <div> vazio (width 0) dentro do row do CPF/Nome Completo (parent 'row q-col-gutter-md') pode estar consumindo espaço/afetando quebra de linha; convém checar.",
+    "Segundo o próprio review_request, a tag <style id='layout-fix'> deveria ter sido injetada nesta iteração, mas ela está AUSENTE no arquivo servido. Isso indica que a edição foi feita apenas no JS (LAYOUT map) e não no <head>. Sem as regras CSS, as classes col-md-6/8 recebidas via JS não têm efeito. Aparência confirmada via screenshot.",
+    "Arquivo /app/frontend/public/inscricao.html tem 639 linhas com múltiplos scripts inline; considerar extrair scripts para arquivos separados em iterações futuras (organização, cache)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "50% (remoção do 'Confirme o CPF' e regressões OK; layout compacto FALHOU)"},
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Após E1 injetar a <style id='layout-fix'> com regras para .col-md-6/.col-md-8, revalidar as larguras em viewport 1440x900 executando o script Playwright já usado (ver primeira execução deste iteration). Esperado widthPct dos labels: CPF=33, Nome Completo=66, Data=25, Gênero=25, Estado Civil=25, País=25, Nome da Mãe=50. Adicionalmente, verificar que a screenshot mostra CPF+Nome Completo na mesma linha visual e Data+Gênero+Estado Civil+País na mesma linha.",
+  "rca_of_the_issue": {
+    "root_cause": "A <style id='layout-fix'> descrita no review_request como parte desta iteração NÃO foi injetada no arquivo /app/frontend/public/inscricao.html. Somente a alteração no script JS foi feita (LAYOUT map em ajustarLayoutDadosPessoais atribuindo col-md-6 e col-md-8). Como o CSS do Quasar embutido só declara regras para .col-md-2, .col-md-3, .col-md-4, .col-md-9 e .col-md-12, as classes col-md-6/col-md-8 aplicadas via JS ficam sem largura definida (computed width = 0px, mas o flex do label expande para 100% do container pai).",
+    "reproduction_steps": [
+      "1. Abrir https://ohmygood-sandbox.preview.emergentagent.com/inscricao.html em viewport 1440x900",
+      "2. Aguardar >3s (networkidle + timeout para ajustarLayoutDadosPessoais rodar)",
+      "3. Inspecionar label do input[aria-label='NOME COMPLETO'] => className tem 'col-md-8', mas offsetWidth = 970px (100% do parent 970px)",
+      "4. Inspecionar label do input[aria-label='NOME DA MÃE'] => className tem 'col-md-6', mas offsetWidth = 962px (100%)",
+      "5. document.getElementById('layout-fix') retorna null - a tag CSS não existe.",
+      "6. Confirmar via getComputedStyle({.col-md-6}) => width 0px; ({.col-md-8}) => width 0px."
+    ],
+    "mitigation": "Adicionar no <head> (ou dentro de um <style> qualquer): @media (min-width:1024px){.row>.col-md-6{width:50%!important;flex:0 0 auto;min-width:0;max-width:100%}.row>.col-md-8{width:66.6667%!important;flex:0 0 auto;min-width:0;max-width:100%}}. Para o caso Gênero (parent não é .row), também ajustar o script para aplicar col-md-* no ancestor correto ou remover o wrapper extra."
+  }
+}
