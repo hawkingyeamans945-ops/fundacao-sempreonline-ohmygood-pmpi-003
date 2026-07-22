@@ -211,3 +211,20 @@ main{max-width:1050px;margin:0 auto}
   ready(function(){ setTimeout(bind,300); setTimeout(bind,1000); setTimeout(bind,2500); });
 })();
 </script>
+
+<style id="mobile-brasao-fix">
+@media (max-width: 768px) {
+  /* Reduz o brasão da Polícia Militar do Piauí no mobile */
+  .col-md-2 > img[alt="Logo"], .col-md-2 img[alt=Logo] {
+    max-width: 140px !important;
+    width: 140px !important;
+    padding: 4px !important;
+    display: block;
+    margin: 0 auto !important;
+  }
+  /* Also make the container not force full-width */
+  .col-md-2:has(> img[alt="Logo"]) {
+    text-align: center;
+  }
+}
+</style>
