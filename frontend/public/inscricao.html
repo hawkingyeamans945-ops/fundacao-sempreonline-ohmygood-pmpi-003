@@ -774,84 +774,66 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
 <script>
 (function(){
   function ready(cb){ if(document.readyState!=='loading') cb(); else document.addEventListener('DOMContentLoaded', cb); }
-  var REQUIRED = [
-    {kind:'input', label:'CPF'},
-    {kind:'input', label:'NOME COMPLETO'},
-    {kind:'input', label:'Data de Nascimento'},
-    {kind:'select', label:'Gênero'},
-    {kind:'input', label:'NOME DA MÃE'},
-    {kind:'select', label:'Estado civil'},
-    {kind:'select', label:'Em que país você nasceu?'},
-    {kind:'select', label:'Tipo de endereço'},
-    {kind:'input', label:'CEP'},
-    {kind:'input', label:'Endereço'},
-    {kind:'input', label:'Número'},
-    {kind:'input', label:'Bairro'},
-    {kind:'input', label:'Cidade'},
-    {kind:'select', label:'Estado'},
-    {kind:'select', label:'Maior grau de escolaridade'},
-    {kind:'select', label:'Tipo'},
-    {kind:'input', label:'Telefone', prefix:true},
-    {kind:'input', label:'E-mail Primário'},
-    {kind:'select', label:'Tipo de documento'}
-  ];
   function findInput(label, prefix){
     var arr = Array.from(document.querySelectorAll('input[aria-label]'));
-    if (prefix) return arr.find(function(i){ return (i.getAttribute('aria-label')||'').toLowerCase().indexOf(label.toLowerCase()) === 0; });
-    return arr.find(function(i){ return (i.getAttribute('aria-label')||'') === label; });
+    label = label.toLowerCase();
+    if (prefix) return arr.find(function(i){ return (i.getAttribute('aria-label')||'').toLowerCase().indexOf(label) === 0; });
+    return arr.find(function(i){ return (i.getAttribute('aria-label')||'').toLowerCase() === label; });
   }
   function findSelect(label){
     var arr = Array.from(document.querySelectorAll('select'));
-    return arr.find(function(s){ return (s.getAttribute('data-qs-label')||'').toLowerCase() === label.toLowerCase(); });
-  }
-  function isVisible(el){
-    if (!el) return false;
-    var e = el.closest('label') || el;
-    var node = e;
-    while (node && node !== document.body){
-      var cs = window.getComputedStyle(node);
-      if (cs.display === 'none' || cs.visibility === 'hidden') return false;
-      node = node.parentElement;
-    }
-    return true;
+    label = label.toLowerCase();
+    return arr.find(function(s){ return (s.getAttribute('data-qs-label')||'').toLowerCase() === label; });
   }
   function getSalvarBtn(){
     return Array.from(document.querySelectorAll('button')).find(function(b){ return /salvar/i.test(b.textContent||''); });
   }
-  function checkAll(){
+  function valOfLabel(label){
+    var e = findInput(label) || findSelect(label);
+    return e ? (e.value||'').trim() : '';
+  }
+  function missingList(){
     var missing = [];
-    REQUIRED.forEach(function(r){
-      var el = r.kind === 'input' ? findInput(r.label, r.prefix) : findSelect(r.label);
-      if (!el){ missing.push(r.label); return; }
-      if (!isVisible(el)) return;
-      if (!((el.value||'').trim())) missing.push(r.label);
-    });
-    var paisSel = findSelect('Em que país você nasceu?');
-    if (paisSel && paisSel.value === 'Brasil'){
-      var estadoSel = findSelect('Em que estado você nasceu?');
-      var natSel = findSelect('Naturalidade');
-      if (!estadoSel || !(estadoSel.value||'').trim()) missing.push('Em que estado você nasceu?');
-      if (!natSel || !(natSel.value||'').trim()) missing.push('Naturalidade');
+    var req = [
+      ['CPF','CPF'], ['NOME COMPLETO','Nome completo'], ['Data de Nascimento','Data de nascimento'],
+      ['Gênero','Gênero'], ['NOME DA MÃE','Nome da mãe'], ['Estado civil','Estado civil'],
+      ['Em que país você nasceu?','País de nascimento'],
+      ['Tipo de endereço','Tipo de endereço'], ['CEP','CEP'], ['Endereço','Endereço'],
+      ['Número','Número'], ['Bairro','Bairro'], ['Cidade','Cidade'], ['Estado','Estado (endereço)'],
+      ['Maior grau de escolaridade','Escolaridade'],
+      ['Tipo','Tipo de telefone'],
+      ['E-mail Primário','E-mail'],
+      ['Tipo de documento','Tipo de documento']
+    ];
+    req.forEach(function(r){ if(!valOfLabel(r[0])) missing.push(r[1]); });
+    // Telefone (celular ou fixo, prefixo)
+    var telEl = findInput('Telefone', true);
+    if (!telEl || !(telEl.value||'').trim()) missing.push('Telefone');
+    // País Brasil requer estado e naturalidade
+    if (valOfLabel('Em que país você nasceu?') === 'BRASIL' || valOfLabel('Em que país você nasceu?') === 'Brasil'){
+      if (!valOfLabel('Em que estado você nasceu?')) missing.push('Estado de nascimento');
+      if (!valOfLabel('Naturalidade')) missing.push('Naturalidade');
     }
-    var tipoDoc = findSelect('Tipo de documento');
-    if (tipoDoc && (tipoDoc.value||'').trim()){
+    // Uploads (se tipo doc preenchido)
+    if (valOfLabel('Tipo de documento')){
       var f = document.getElementById('doc-front-file');
       var b = document.getElementById('doc-back-file');
-      if (!f || !f.files || !f.files[0]) missing.push('Upload frente');
-      if (!b || !b.files || !b.files[0]) missing.push('Upload verso');
+      if (!f || !f.files || !f.files[0]) missing.push('Upload frente do documento');
+      if (!b || !b.files || !b.files[0]) missing.push('Upload verso do documento');
     }
     return missing;
   }
-  function applyState(){
-    var btn = getSalvarBtn(); if (!btn) return;
-    var missing = checkAll();
-    if (missing.length === 0){
-      btn.removeAttribute('disabled');
-      btn.style.opacity=''; btn.style.cursor=''; btn.title='';
+  function updateBtnHint(){
+    var btn = getSalvarBtn(); if(!btn) return;
+    // sempre habilitado; apenas atualiza title/opacidade
+    var missing = missingList();
+    btn.removeAttribute('disabled');
+    if (missing.length){
+      btn.style.opacity = '0.85';
+      btn.title = 'Faltam: ' + missing.slice(0,6).join(', ') + (missing.length>6?'…':'');
     } else {
-      btn.setAttribute('disabled','true');
-      btn.style.opacity='0.5'; btn.style.cursor='not-allowed';
-      btn.title = 'Preencha: ' + missing.slice(0,5).join(', ') + (missing.length>5?'…':'');
+      btn.style.opacity = '';
+      btn.title = 'Enviar inscrição';
     }
   }
   function fileToDataUrl(file){
@@ -866,66 +848,92 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
     function v(l,p){ var e=findInput(l,p); return e?(e.value||'').trim():''; }
     function s(l){ var e=findSelect(l); return e?(e.value||'').trim():''; }
     var data = {
-      cpf: v('CPF'), nome: v('NOME COMPLETO'), nascimento: v('Data de Nascimento'),
-      genero: s('Gênero'), mae: v('NOME DA MÃE'), estadoCivil: s('Estado civil'),
-      pais: s('Em que país você nasceu?'),
-      estadoNasc: s('Em que estado você nasceu?'),
-      naturalidade: s('Naturalidade'),
-      enderecoTipo: s('Tipo de endereço'), cep: v('CEP'),
-      endereco: v('Endereço'), numero: v('Número'), complemento: v('Complemento'),
-      bairro: v('Bairro'), cidade: v('Cidade'), uf: s('Estado'),
-      escolaridade: s('Maior grau de escolaridade'),
-      telTipo: s('Tipo'),
-      telefone: (function(){var el=findInput('Telefone',true);return el?(el.value||'').trim():'';})(),
-      email: v('E-mail Primário'),
-      docTipo: s('Tipo de documento')
+      cpf:v('CPF'), nome:v('NOME COMPLETO'), nascimento:v('Data de Nascimento'),
+      genero:s('Gênero'), mae:v('NOME DA MÃE'), estadoCivil:s('Estado civil'),
+      pais:s('Em que país você nasceu?'),
+      estadoNasc:s('Em que estado você nasceu?'), naturalidade:s('Naturalidade'),
+      enderecoTipo:s('Tipo de endereço'), cep:v('CEP'),
+      endereco:v('Endereço'), numero:v('Número'), complemento:v('Complemento'),
+      bairro:v('Bairro'), cidade:v('Cidade'), uf:s('Estado'),
+      escolaridade:s('Maior grau de escolaridade'),
+      telTipo:s('Tipo'),
+      telefone:(function(){var el=findInput('Telefone',true);return el?(el.value||'').trim():'';})(),
+      email:v('E-mail Primário'),
+      docTipo:s('Tipo de documento')
     };
-    if (/^\d{4}-\d{2}-\d{2}$/.test(data.nascimento)){
-      var p = data.nascimento.split('-'); data.nascimento = p[2]+'/'+p[1]+'/'+p[0];
-    }
+    if(/^\d{4}-\d{2}-\d{2}$/.test(data.nascimento)){ var p=data.nascimento.split('-'); data.nascimento=p[2]+'/'+p[1]+'/'+p[0]; }
     return data;
   }
   function showSpinner(){
-    var ov = document.createElement('div');
+    var ov=document.createElement('div');
     ov.style.cssText='position:fixed;inset:0;background:rgba(255,255,255,.85);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px';
     ov.innerHTML='<div style="width:56px;height:56px;border:5px solid #eee;border-top-color:#a90637;border-radius:50%;animation:__spn 0.8s linear infinite"></div><div style="color:#a90637;font-weight:500">Enviando…</div><style>@keyframes __spn{to{transform:rotate(360deg)}}</style>';
     document.body.appendChild(ov);
   }
+  function setupCheckbox(){
+    // Corrigir checkbox opcional "Deseja receber o informativo..."
+    var cbs = document.querySelectorAll('.q-checkbox');
+    cbs.forEach(function(cb){
+      if (cb.__bound) return;
+      cb.__bound = true;
+      cb.style.cursor = 'pointer';
+      cb.addEventListener('click', function(ev){
+        var checked = cb.getAttribute('aria-checked') === 'true';
+        cb.setAttribute('aria-checked', checked ? 'false' : 'true');
+        var bg = cb.querySelector('.q-checkbox__bg');
+        var inner = cb.querySelector('.q-checkbox__inner');
+        if (!checked){
+          if (bg) bg.style.background = '#a90637';
+          if (bg) bg.style.borderColor = '#a90637';
+          // desenhar um "check" simples
+          if (bg && !bg.querySelector('.mini-check')){
+            var span = document.createElement('span');
+            span.className='mini-check';
+            span.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;line-height:1;pointer-events:none';
+            span.textContent='✓';
+            bg.style.position='relative';
+            bg.appendChild(span);
+          }
+        } else {
+          if (bg){ bg.style.background=''; bg.style.borderColor=''; var m=bg.querySelector('.mini-check'); if(m) m.remove(); }
+        }
+      });
+    });
+  }
   function bindListeners(){
     Array.from(document.querySelectorAll('input, select')).forEach(function(el){
-      el.addEventListener('input', applyState);
-      el.addEventListener('change', applyState);
+      el.addEventListener('input', updateBtnHint);
+      el.addEventListener('change', updateBtnHint);
     });
     var btn = getSalvarBtn();
     if (btn){
       btn.addEventListener('click', async function(ev){
-        var missing = checkAll();
+        ev.preventDefault(); ev.stopPropagation();
+        var missing = missingList();
         if (missing.length){
-          ev.preventDefault(); ev.stopPropagation();
-          alert('Preencha os campos obrigatorios antes de salvar:\n\n- ' + missing.join('\n- '));
+          alert('Preencha os campos obrigatórios antes de salvar:\n\n- ' + missing.join('\n- '));
           return;
         }
-        ev.preventDefault(); ev.stopPropagation();
         var data = collectData();
         var f = document.getElementById('doc-front-file');
         var b = document.getElementById('doc-back-file');
-        try {
-          if (f && f.files && f.files[0]) data.docFront = await fileToDataUrl(f.files[0]);
-          if (b && b.files && b.files[0]) data.docBack  = await fileToDataUrl(b.files[0]);
-        } catch(e){}
-        try { sessionStorage.setItem('inscricaoData', JSON.stringify(data)); } catch(e){}
+        try{
+          if(f && f.files && f.files[0]) data.docFront = await fileToDataUrl(f.files[0]);
+          if(b && b.files && b.files[0]) data.docBack  = await fileToDataUrl(b.files[0]);
+        }catch(e){}
+        try{ sessionStorage.setItem('inscricaoData', JSON.stringify(data)); }catch(e){}
         showSpinner();
-        setTimeout(function(){ window.location.href = 'conferencia.html'; }, 1500);
+        setTimeout(function(){ window.location.href='conferencia.html'; }, 1500);
       }, true);
     }
   }
   function init(){
-    var tries = 0;
+    var tries=0;
     (function wait(){
       tries++;
-      if (document.querySelector('select[data-qs-label]') || tries > 60){
-        bindListeners(); applyState();
-        var t=0; var iv=setInterval(function(){ t++; applyState(); if(t>15) clearInterval(iv); },200);
+      if (document.querySelector('select[data-qs-label]') || tries>60){
+        bindListeners(); updateBtnHint(); setupCheckbox();
+        var t=0; var iv=setInterval(function(){ t++; updateBtnHint(); setupCheckbox(); if(t>15) clearInterval(iv); }, 300);
       } else setTimeout(wait, 100);
     })();
   }
