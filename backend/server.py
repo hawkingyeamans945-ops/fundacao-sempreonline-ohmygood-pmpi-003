@@ -96,32 +96,6 @@ async def lookup_municipios(uf: str):
         raise HTTPException(status_code=502, detail=f"Erro ao consultar IBGE: {e}")
 
 
-@api_router.post("/pix/generate")
-async def gerar_pix(payload: dict):
-    """Gera BR Code PIX (copia-e-cola) + QR base64.
-    payload: { cpf, nome, cargo, valor?, txid? }
-    """
-    from pix_generator import build_brcode, build_qr_png_base64
-    cpf = (payload or {}).get('cpf', '')
-    nome = (payload or {}).get('nome', 'CANDIDATO')
-    valor = float((payload or {}).get('valor') or 150.00)
-    txid = (payload or {}).get('txid') or (''.join(c for c in cpf if c.isdigit())[:11] or '***')
-    # Chave PIX estática do beneficiário (Fundação Carlos Chagas — placeholder)
-    pix_key = os.environ.get('PIX_KEY', '58.196.642/0001-84')  # CNPJ da FCC como default
-    try:
-        brcode = build_brcode(
-            pix_key=pix_key,
-            valor=valor,
-            nome_beneficiario='FUNDACAO CARLOS CHAGAS',
-            cidade_beneficiario='SAO PAULO',
-            txid=txid,
-        )
-        qr_b64 = build_qr_png_base64(brcode, box_size=8, border=2)
-        return {"brcode": brcode, "qr_base64": qr_b64, "valor": valor, "beneficiario": "Fundação Carlos Chagas"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao gerar PIX: {e}")
-
-
 app.include_router(api_router)
 app.include_router(admin_router)
 

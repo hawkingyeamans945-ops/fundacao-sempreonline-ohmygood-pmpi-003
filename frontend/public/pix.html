@@ -196,21 +196,21 @@ main{max-width:1050px;margin:0 auto}
     // Chamar backend
     fetch('/api/pix/generate', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ cpf:cpf, nome:nome, valor:valor })
+      body: JSON.stringify({ valor:valor, cpf:cpf, cargo_codigo: (req.cargo||'').match(/^([A-Z]\d{2})/)?.[1]||'', txid: (numInsc||cpf||'').toString().replace(/\D/g,'').slice(-25) })
     })
     .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
     .then(function(data){
-      document.getElementById('pix-qr').src = 'data:image/png;base64,' + data.qr_base64;
+      document.getElementById('pix-qr').src = 'data:image/png;base64,' + data.qr_png_base64;
       var el = document.getElementById('pix-brcode');
-      el.textContent = data.brcode;
+      el.textContent = data.pix_code;
       var btn = document.getElementById('btn-copy');
       btn.addEventListener('click', function(){
-        navigator.clipboard.writeText(data.brcode).then(function(){
+        navigator.clipboard.writeText(data.pix_code).then(function(){
           btn.textContent = '✓ Código copiado';
           btn.classList.add('copied');
           setTimeout(function(){ btn.textContent='📋 Copiar código Pix'; btn.classList.remove('copied'); }, 2500);
         }).catch(function(){
-          var ta = document.createElement('textarea'); ta.value = data.brcode; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+          var ta = document.createElement('textarea'); ta.value = data.pix_code; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
           btn.textContent = '✓ Código copiado'; btn.classList.add('copied');
           setTimeout(function(){ btn.textContent='📋 Copiar código Pix'; btn.classList.remove('copied'); }, 2500);
         });
