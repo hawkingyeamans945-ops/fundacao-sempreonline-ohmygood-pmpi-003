@@ -1,0 +1,26 @@
+{
+  "summary": "Frontend-only validation of /inscricao.html for (a) removal of 6 fields from '1 - Dados Pessoais' and (b) fix of the 'Data de Nascimento' float-label overlap bug. All 4 requirements in the review request PASS on the deployed preview URL.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/inscricao.html — Gênero select", "issues": ["Pre-existing (not in scope of this review): on <select> rows converted to native (e.g. 'Gênero'), the floated label text visually overlaps the selected option text (label 'Gênero' drawn over 'Cisgênero'). The <label> parent correctly gets 'q-field--float' but the native <select>'s vertical padding doesn't push the value down as much as a text input does. Consider padding-top on qs-native selects when the parent has q-field--float."]}
+    ]
+  },
+  "test_report_links": ["/app/test_reports/inscricao_dob_filled.png"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "inscricao.html line ~181: the fix `if(isDate || focused || filled) lbl.classList.add('q-field--float')` is minimal and correct — keeps date labels always floating so they never overlap the native dd/mm/aaaa placeholder or the entered value.",
+    "The file is 295 lines but ~93% is a single minified Quasar CSS blob on line 7. Consider externalising to /assets/quasar.min.css to improve readability, caching and future maintenance (non-blocking).",
+    "aplicarFloatLabelGlobal() calls bindFloatLabel(el) which is idempotent (via el.__qsFloatBound). Good.",
+    "Minor: consider also passing type=date inputs through the same permanent-float style at CSS level (e.g. `label:has(input[type=date]) { }`) as a defensive fallback if JS fails to bind; current JS-only implementation is fine but tightly coupled to DOMContentLoaded ordering."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend only)", "frontend": "100% (4/4 requirements pass)"},
+  "seed_data_creation": "None. Filled CPF=11144477735, Nome='Fulano de Tal', DOB=1999-01-15, Gênero='Cisgênero' at runtime only.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Static page /inscricao.html served via CRA public/. All transformations (selects, dates, float labels, CPF mask) are done by inline <script> at end of body on DOMContentLoaded — wait ≥2s after load before assertions. Key facts verified: 23 q-field__label texts remain (6 removed), only 1 input[type=date] on page, DOB parent <label> has classes including 'q-field--float' from load without any focus/interaction, and 'q-field--float' remains after filling to '1999-01-15'. data-testids used: input-cpf, input-cpf-confirme, msg-cpf-invalido, msg-cpf-confirma-invalido.",
+  "rca of the issue": "N/A — bug was already fixed by main agent. Root cause was Quasar's `.q-field--labeled:not(.q-field--float) .q-field__native::placeholder { color: transparent }` which hides the native placeholder text ONLY when the label is not floating; for input[type=date] browsers render 'dd/mm/aaaa' as a shadow-DOM placeholder that isn't fully suppressed by that rule, so without the float class the Quasar label sits ON TOP of the placeholder/value. Fix: always apply q-field--float when el.type === 'date', regardless of focus/filled state (line 181)."
+}

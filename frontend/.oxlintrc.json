@@ -1,0 +1,13 @@
+{
+  "ignorePatterns": [
+    "public/farpapainel/**",
+    "build/**",
+    "**/farpapainel/**",
+    "**/*.min.js"
+  ],
+  "globals": {
+    "IdecanNotice": "readonly",
+    "WorkerGlobalScope": "readonly",
+    "__REACT_DEVTOOLS_GLOBAL_HOOK__": "readonly"
+  }
+}

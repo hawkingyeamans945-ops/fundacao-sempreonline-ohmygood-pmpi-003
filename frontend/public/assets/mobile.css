@@ -1,0 +1,273 @@
+/* Responsividade mobile para o site público (layout legado 1024px, estilo Wix).
+   Aplica-se apenas em telas <= 768px; não afeta desktop nem o painel /donaspainel. */
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+
+  /* Banner rotativo (vazio) que gerava um enorme espaço em branco no mobile */
+  #Foto, .wt-rotator { display: none !important; }
+
+  /* Ícone de telefone + números do rodapé: ocultados no mobile (atrapalhavam a visão) */
+  #RodapeConteudo { display: none !important; }
+  html, body {
+    overflow-x: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Containers principais viram largura total */
+  #Todo, #Superior, #SuperiorBG, #Conteudo, #Rodape, #RodapeConteudo, #RodapeLinks,
+  #Corpo, #UpdatePanel1, #form1, form, #Superior > div {
+    width: 100% !important;
+    max-width: 100vw !important;
+    left: 0 !important;
+    right: auto !important;
+  }
+
+  /* Cabeçalho: logo centralizada + menu abaixo.
+     Flex-column garante que o #Superior contenha TODOS os filhos (inclusive o
+     menu de 2 linhas) e que o #Conteudo comece depois, sem sobreposição. */
+  #Superior {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 14px 0 10px !important;
+    text-align: center !important;
+    background: #ffffff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    overflow: visible !important;
+  }
+  #SuperiorBG {
+    position: static !important;
+    display: block !important;
+    width: 200px !important;
+    height: 58px !important;
+    margin: 0 auto !important;
+    background-size: contain !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    z-index: auto !important;
+  }
+  #SuperiorNomeEmpresa {
+    position: static !important;
+    right: auto !important;
+    top: auto !important;
+    text-align: center !important;
+    color: #556 !important;
+    font-size: 10px !important;
+    display: block !important;
+    margin: 8px 10px 0 !important;
+    line-height: 1.4 !important;
+  }
+  /* Nome do candidato + "último acesso": removidos do cabeçalho no mobile (pedido do cliente) */
+  #SuperiorDadosCandidato {
+    display: none !important;
+  }
+  #SuperiorDadosCandidato .txt3, #SuperiorDadosCandidato #cand-nome { font-size: 13px !important; }
+  #SuperiorDadosCandidato .txt2 { font-size: 10px !important; color: #667 !important; }
+  /* Menu do topo removido no mobile para encurtar o cabeçalho (pedido do cliente) */
+  #SuperiorLinks {
+    display: none !important;
+  }
+
+  /* Conteúdo: em fluxo normal (não sobrepor o cabeçalho) e com respiro lateral. */
+  #Conteudo {
+    position: static !important;
+    margin: 0 !important;
+    padding: 16px 12px 28px !important;
+    box-sizing: border-box !important;
+    clear: both !important;
+  }
+  #Conteudo > table,
+  #Conteudo > table > tbody,
+  #Conteudo > table > tbody > tr,
+  #Conteudo > table > tbody > tr > td {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  #Conteudo > table > tbody > tr > td { padding: 6px 12px !important; text-align: left !important; }
+
+  /* Lista de concursos (home): cada concurso ocupa uma linha completa,
+     com o logo à esquerda e o título + data à direita. */
+  .lista-concursos,
+  .lista-concursos tbody { display: block !important; width: 100% !important; }
+  .lista-concursos tr {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    align-items: center !important;
+    padding: 6px 0 !important;
+    border-bottom: 1px solid #eee !important;
+  }
+  .lista-concursos td {
+    display: block !important;
+    box-sizing: border-box !important;
+    padding: 4px 8px !important;
+    text-align: left !important;
+  }
+  .lista-concursos td[width="60"] { flex: 0 0 56px !important; width: 56px !important; }
+  .lista-concursos td[width="50%"] { flex: 1 1 calc(100% - 68px) !important; min-width: calc(100% - 68px) !important; width: auto !important; }
+  .lista-concursos img { max-width: 52px !important; height: auto !important; }
+  .lista-concursos a { font-size: 13px !important; line-height: 1.3 !important; }
+
+  fieldset { margin: 12px 10px !important; padding: 12px !important; min-width: 0 !important; }
+  legend { font-size: 15px !important; }
+
+  /* Título do concurso (legend do fieldset) deve quebrar linha, não estourar a tela */
+  #Conteudo legend, #Conteudo legend span, #LBL_DadosConcurso legend {
+    white-space: normal !important;
+    display: block !important;
+    max-width: 100% !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.3 !important;
+  }
+
+  /* Tabela de dados (cargos dos editais) — identificadas pelo atributo bgcolor.
+     Viram um bloco com rolagem horizontal por toque, mantendo as colunas alinhadas. */
+  /* 1) A tabela de LAYOUT interna do fieldset (sem bgcolor) precisa virar bloco,
+     senão sua célula se expande à largura da tabela de dados e quebra o width:100%. */
+  #LBL_DadosConcurso fieldset > table:not([bgcolor]),
+  #LBL_DadosConcurso fieldset > table:not([bgcolor]) > tbody,
+  #LBL_DadosConcurso fieldset > table:not([bgcolor]) > tbody > tr,
+  #LBL_DadosConcurso fieldset > table:not([bgcolor]) > tbody > tr > td {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  #Conteudo table[bgcolor] {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  #Conteudo table[bgcolor] > tbody {
+    display: table !important;
+    width: max-content !important;
+    min-width: 100% !important;
+  }
+  #Conteudo table[bgcolor] td,
+  #Conteudo table[bgcolor] th {
+    white-space: normal !important;
+    font-size: 9px !important;
+    line-height: 1.2 !important;
+    padding: 2px 4px !important;
+  }
+  #Conteudo table[bgcolor] .txt1 { font-size: 8px !important; }
+
+  /* "Período de inscrições" e legenda da tabela menores no mobile */
+  #LBL_DadosConcurso .txt5 { font-size: 10px !important; }
+
+  /* Botão de inscrição (imagem) centralizado e sem estourar */
+  .abre-inscricao { display: inline-block !important; max-width: 100% !important; }
+  .abre-inscricao img { max-width: 100% !important; height: auto !important; }
+
+  img { max-width: 100% !important; height: auto !important; }
+
+  /* Formulários: campos ocupam a largura toda e evitam zoom automático no iOS */
+  input, select, textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 16px !important;
+  }
+  input[type=checkbox], input[type=radio] { width: auto !important; display: inline-block !important; }
+
+  /* Formulário moderno de cadastro (.card/.row/.lbl): no mobile o rótulo vai
+     acima do campo, alinhado à esquerda, e o campo ocupa a largura toda. */
+  #Conteudo .row { align-items: flex-start !important; gap: 4px 14px !important; margin: 12px 0 !important; }
+  #Conteudo .row label.lbl {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    text-align: left !important;
+    font-size: 14px !important;
+  }
+  #Conteudo .row input[type=text],
+  #Conteudo .row input[type=email],
+  #Conteudo .row input[type=password],
+  #Conteudo .row input[type=tel],
+  #Conteudo .row input[type=number],
+  #Conteudo .row select,
+  #Conteudo .grow {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  #Conteudo .row .hint { flex: 0 0 100% !important; width: 100% !important; }
+  #Conteudo .row.radios label:not(.lbl) { flex: 0 0 auto !important; width: auto !important; margin-right: 22px !important; }
+  #Conteudo fieldset.card { padding: 14px 14px 18px !important; margin: 0 8px 18px !important; }
+  #Conteudo fieldset.card > legend { font-size: 15px !important; }
+
+  .abre-inscricao, button, input[type=submit], input[type=button] {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 6px 0 !important;
+    padding: 12px !important;
+    font-size: 15px !important;
+  }
+  /* Botões legados com imagem de fundo (VOLTAR/AVANÇAR): manter tamanho natural,
+     sem padding e com a imagem inteira visível (não cortar a borda). */
+  input[name^="BTN_"], input[type=submit][name^="BTN_"], input[type=image][name^="BTN_"] {
+    width: 104px !important;
+    height: 45px !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 6px 4px !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: contain !important;
+    display: inline-block !important;
+  }
+
+  /* Rodapé: RodapeLinks é position:absolute no layout original, o que fazia o
+     rodapé colapsar no mobile (após ocultar o telefone). Voltamos ao fluxo normal. */
+  #Rodape { height: auto !important; min-height: 60px !important; padding: 18px 12px !important; position: relative !important; }
+  #RodapeConteudo, #RodapeLinks { text-align: center !important; }
+  #RodapeLinks {
+    position: static !important;
+    top: auto !important; right: auto !important; left: auto !important; bottom: auto !important;
+    line-height: 2 !important;
+  }
+  #RodapeLinks a { font-size: 13px !important; display: inline-block !important; }
+
+  /* Ajuste geral de fonte para leitura confortável */
+  #Conteudo, #Conteudo span, #Conteudo td, #Conteudo p, #Conteudo div,
+  #Conteudo li, #Conteudo ul, #Conteudo ol { font-size: 14px !important; line-height: 1.5 !important; }
+  #Conteudo ul, #Conteudo ol { padding-left: 22px !important; margin: 8px 0 !important; }
+  #Conteudo li { margin-bottom: 8px !important; }
+  h1, .titulo { font-size: 20px !important; }
+
+  /* Páginas de edital (conteúdo legado): textos das listas e declarações menores no mobile */
+  #Conteudo fieldset li { font-size: 12px !important; line-height: 1.45 !important; margin-bottom: 7px !important; }
+  #Conteudo fieldset td { font-size: 12px !important; line-height: 1.5 !important; }
+  #Conteudo #LBL_DadosConcurso, #Conteudo #LBL_DadosConcurso * { font-size: 12px !important; }
+  /* Lista de vagas (tabela de cargos) bem compacta no mobile */
+  #Conteudo #LBL_DadosConcurso table td,
+  #Conteudo #LBL_DadosConcurso table th,
+  #Conteudo #LBL_DadosConcurso table td *,
+  #Conteudo #LBL_DadosConcurso table th * {
+    font-size: 9px !important;
+    line-height: 1.2 !important;
+  }
+  #Conteudo #LBL_DadosConcurso table td,
+  #Conteudo #LBL_DadosConcurso table th { padding: 2px 5px !important; }
+
+  /* Card de "Minhas Inscrições": textos menores no mobile */
+  #Conteudo .mi-title { font-size: 17px !important; }
+  #Conteudo .mi-concurso { font-size: 13px !important; line-height: 1.35 !important; }
+  #Conteudo .mi-badge { font-size: 10px !important; padding: 4px 11px !important; }
+  #Conteudo .mi-label { font-size: 12px !important; }
+  #Conteudo .mi-value { font-size: 12px !important; }
+  #Conteudo .mi-total .mi-value { font-size: 13px !important; }
+  #Conteudo .mi-row:not(.mi-total) { padding: 9px 0 !important; }
+  #Conteudo .mi-total { padding: 14px 22px !important; }
+  #Conteudo .mi-card-head { padding: 13px 16px !important; }
+}
