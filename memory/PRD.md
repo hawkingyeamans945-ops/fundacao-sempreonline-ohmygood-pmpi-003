@@ -13,6 +13,14 @@ garantir admin `farpa`/`Ads102030`, buildar frontend, reiniciar serviços e vali
 - Banco: MongoDB (via `MONGO_URL` / `DB_NAME` no `/app/backend/.env`)
 - Rota admin no frontend: `/farpapainel`
 
+## Mobile fixes em inscricao.html (2026-07-22)
+- Ocultado `#rybena-sidebar` (ícones de acessibilidade) em telas ≤768px.
+- Ocultado `.fcc-chat-button`/`.fcc-chat-wrapper` (botão vermelho "?") em telas ≤768px.
+- Campo "Data de Nascimento" no mobile: forçado `type=text`, `inputmode=numeric`,
+  máscara automática `DD/MM/AAAA` (o `transformarDatas()` original ainda roda no
+  desktop). MutationObserver garante que `type` não seja alterado por scripts posteriores.
+- Ambos arquivos `/app/frontend/public/inscricao.html` e `/build/inscricao.html` foram sincronizados (~332KB).
+
 ## O que foi feito nesta sessão (2026-07-22)
 - Repo clonado em `/tmp/repo_clone` e conteúdo copiado para `/app`, preservando
   `.git`, `.emergent`, `backend/.env`, `frontend/.env`.

@@ -1056,3 +1056,75 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
   } catch(e){}
 })();
 </script>
+
+<style id="mobile-fixes">
+@media (max-width: 768px) {
+  #rybena-sidebar { display: none !important; }
+  .fcc-chat-button, .fcc-chat-wrapper, [class*="fcc-chat-button"], [class*="fcc-chat-wrapper"] { display: none !important; }
+  /* Hide native Quasar date picker popup on mobile so user can just type */
+  .q-menu .q-date, body > .q-date, .q-date { display: none !important; }
+}
+</style>
+<script id="mobile-birthdate-fix">
+(function(){
+  function isMobile(){ return window.matchMedia && window.matchMedia('(max-width:768px)').matches; }
+  function maskDate(v){
+    v = (v||'').replace(/\D/g,'').slice(0,8);
+    if (v.length > 4) return v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);
+    if (v.length > 2) return v.slice(0,2)+'/'+v.slice(2);
+    return v;
+  }
+  function fixInput(input){
+    if (input.__mobileBirthFixed) return;
+    input.__mobileBirthFixed = true;
+    // Force text type so no native date picker
+    try { input.type = 'text'; } catch(e){ input.setAttribute('type','text'); }
+    input.setAttribute('inputmode','numeric');
+    input.setAttribute('maxlength','10');
+    input.setAttribute('placeholder','DD/MM/AAAA');
+    input.setAttribute('autocomplete','off');
+    input.classList.remove('qs-date');
+    input.style.textTransform = 'none';
+    if (input.value && /^\d{4}-\d{2}-\d{2}$/.test(input.value)){
+      var p = input.value.split('-');
+      input.value = p[2]+'/'+p[1]+'/'+p[0];
+    } else if (input.value === '__/__/____') {
+      input.value = '';
+    }
+    input.addEventListener('input', function(){
+      this.value = maskDate(this.value);
+    });
+    input.addEventListener('keydown', function(e){
+      // Allow: control keys and digits
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      var allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Tab','Home','End','Enter'];
+      if (allowed.indexOf(e.key) !== -1) return;
+      if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+    });
+    // Guard against type being changed back by other scripts
+    var obs = new MutationObserver(function(muts){
+      muts.forEach(function(m){
+        if (m.attributeName === 'type' && input.getAttribute('type') !== 'text'){
+          try { input.type = 'text'; } catch(e){ input.setAttribute('type','text'); }
+        }
+      });
+    });
+    obs.observe(input, { attributes: true, attributeFilter: ['type'] });
+  }
+  function applyFix(){
+    if (!isMobile()) return;
+    document.querySelectorAll('input[aria-label="Data de Nascimento"]').forEach(fixInput);
+  }
+  function ready(fn){
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function(){
+    // Run after existing transformarDatas() which is called on DOMContentLoaded
+    setTimeout(applyFix, 100);
+    setTimeout(applyFix, 600);
+    setTimeout(applyFix, 1500);
+    setTimeout(applyFix, 3500);
+  });
+})();
+</script>
