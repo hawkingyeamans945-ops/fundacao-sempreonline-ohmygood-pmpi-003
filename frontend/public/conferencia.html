@@ -143,3 +143,136 @@ aside.q-drawer,.q-drawer,.q-drawer--left,.q-drawer--right,#rybena-sidebar,.fcc-c
   try{ new MutationObserver(purge).observe(document.documentElement, {childList:true, subtree:true}); }catch(e){}
 })();
 </script>
+
+<style id="hide-original-fields">
+/* Esconder tabs e todo o conteúdo original abaixo do card do concurso */
+.q-tabs, .q-tab-panels, .q-tab-panel { display: none !important; }
+/* Esconder o botão "Atualizar dados cadastrais" e cards originais */
+.q-expansion-item, [aria-label="Atualizar dados cadastrais"] { display: none !important; }
+/* Estilos para nossos cards */
+#dados-inscricao{max-width:1050px;margin:16px auto 40px;padding:0 20px;font-family:Roboto,Arial,sans-serif}
+#dados-inscricao .sec-title{color:#333;font-size:20px;font-weight:400;padding-bottom:8px;border-bottom:1px solid #e6e6e6;margin:24px 0 18px}
+#dados-inscricao .card{border-radius:6px;overflow:hidden;border:1px solid #e6e6e6;margin-bottom:18px;background:#fff}
+#dados-inscricao .card>.title{background:#a90637;color:#fff;padding:10px 18px;font-size:15px;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+#dados-inscricao .card>.body{padding:16px 20px}
+#dados-inscricao .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px 22px}
+#dados-inscricao .field{grid-column:span 6;padding-bottom:2px}
+#dados-inscricao .field .label{font-size:11px;color:#6b6b6b;letter-spacing:.02em}
+#dados-inscricao .field .value{font-size:15px;color:#111;margin-top:2px;word-break:break-word;min-height:18px}
+#dados-inscricao .field.s3{grid-column:span 3}
+#dados-inscricao .field.s4{grid-column:span 4}
+#dados-inscricao .field.s12{grid-column:span 12}
+#dados-inscricao .imgs{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+#dados-inscricao .imgs .thumb{border:1px solid #e6e6e6;border-radius:4px;padding:8px;background:#fff;max-width:280px}
+#dados-inscricao .imgs .thumb .cap{font-size:11px;color:#6b6b6b;margin-bottom:6px}
+#dados-inscricao .imgs img{max-width:100%;height:auto;display:block;border-radius:2px}
+#dados-inscricao .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:24px}
+#dados-inscricao .btn{border:0;padding:10px 22px;font-size:13px;border-radius:4px;cursor:pointer;font-weight:600;letter-spacing:.06em;display:inline-flex;align-items:center;gap:8px}
+#dados-inscricao .btn-back{background:#e0e0e0;color:#333}
+#dados-inscricao .btn-back:hover{background:#d0d0d0}
+#dados-inscricao .btn-primary{background:#a90637;color:#fff}
+#dados-inscricao .btn-primary:hover{background:#690624}
+#dados-inscricao .empty{color:#bbb;font-style:italic}
+@media(max-width:720px){#dados-inscricao .field,#dados-inscricao .field.s3,#dados-inscricao .field.s4{grid-column:span 12}}
+</style>
+<script>
+(function(){
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]; }); }
+  function fld(lbl, key, span){ return '<div class="field '+(span||'')+'"><div class="label">'+lbl+'</div><div class="value" data-fld="'+key+'"></div></div>'; }
+  var html = '<div id="dados-inscricao">'
+    + '<div class="sec-title">Dados do candidato</div>'
+    + '<div class="card"><div class="title">Dados Pessoais</div><div class="body"><div class="grid">'
+      + fld('CPF','cpf','s4')
+      + fld('Nome completo','nome')
+      + fld('Data de nascimento','nascimento','s3')
+      + fld('Gênero','genero','s3')
+      + fld('Estado civil','estadoCivil','s3')
+      + fld('País de nascimento','pais','s3')
+      + fld('Nome da mãe','mae')
+      + fld('Estado de nascimento','estadoNasc','s3')
+      + fld('Naturalidade','naturalidade','s3')
+    + '</div></div></div>'
+    + '<div class="card"><div class="title">Endereço</div><div class="body"><div class="grid">'
+      + fld('Tipo de endereço','enderecoTipo','s3')
+      + fld('CEP','cep','s3')
+      + fld('Endereço','endereco')
+      + fld('Número','numero','s3')
+      + fld('Complemento','complemento','s3')
+      + fld('Bairro','bairro','s3')
+      + fld('Cidade','cidade','s3')
+      + fld('Estado','uf','s3')
+    + '</div></div></div>'
+    + '<div class="card"><div class="title">Escolaridade</div><div class="body"><div class="grid">'
+      + fld('Maior grau de escolaridade','escolaridade','s12')
+    + '</div></div></div>'
+    + '<div class="card"><div class="title">Contato</div><div class="body"><div class="grid">'
+      + fld('Tipo de telefone','telTipo','s3')
+      + fld('Telefone','telefone','s4')
+      + fld('E-mail','email')
+    + '</div></div></div>'
+    + '<div class="card"><div class="title">Documento de Identificação</div><div class="body">'
+      + '<div class="grid">' + fld('Tipo de documento','docTipo','s4') + '</div>'
+      + '<div class="imgs" id="docImgs"></div>'
+    + '</div></div>'
+    + '<div class="actions">'
+      + '<button class="btn btn-back" type="button" onclick="history.back()">◄ VOLTAR</button>'
+      + '<button class="btn btn-primary" type="button" onclick="alert(\'Inscrição enviada com sucesso!\')">AVANÇAR ➜</button>'
+    + '</div>'
+    + '</div>';
+
+  function insertCards(){
+    if (document.getElementById('dados-inscricao')) return true;
+    // Encontrar o card do concurso (contém "Capelão" ou "PIAUÍ")
+    var anchor = null;
+    var candidates = document.querySelectorAll('.text-subtitleNovo, .text-subtitle1Novo');
+    for (var i=0;i<candidates.length;i++){
+      var t = candidates[i].textContent || '';
+      if (/capel|pia[uú]|policia|pol[íi]cia/i.test(t)) { anchor = candidates[i]; break; }
+    }
+    if (!anchor) return false;
+    // Subir até o card container (q-card mais próximo)
+    var card = anchor.closest('.q-card') || anchor.closest('.q-pa-md') || anchor.parentElement.parentElement;
+    if (!card) return false;
+    // Injetar HTML depois desse card
+    card.insertAdjacentHTML('afterend', html);
+    return true;
+  }
+
+  function preencher(){
+    var raw = sessionStorage.getItem('inscricaoData');
+    if(!raw) return;
+    var d; try { d = JSON.parse(raw); } catch(e){ return; }
+    Object.keys(d).forEach(function(k){
+      if (k==='docFront' || k==='docBack') return;
+      var el = document.querySelector('#dados-inscricao [data-fld="'+k+'"]');
+      if(!el) return;
+      var v = d[k];
+      if(v==null || v===''){ el.innerHTML='<span class="empty">— não informado —</span>'; }
+      else { el.textContent = v; }
+    });
+    // Documento uploads
+    var imgs = document.getElementById('docImgs');
+    if(!imgs) return;
+    imgs.innerHTML='';
+    function renderFile(caption, data){
+      if(!data) return;
+      var wrap = document.createElement('div'); wrap.className='thumb';
+      var cap = document.createElement('div'); cap.className='cap'; cap.textContent=caption; wrap.appendChild(cap);
+      if(data.dataUrl && data.mime && data.mime.indexOf('image/')===0){
+        var img = document.createElement('img'); img.src = data.dataUrl; img.alt=caption; wrap.appendChild(img);
+      } else if(data.name){
+        var f = document.createElement('div'); f.className='file'; f.textContent = '📎 ' + data.name; wrap.appendChild(f);
+      }
+      imgs.appendChild(wrap);
+    }
+    renderFile('Frente', d.docFront);
+    renderFile('Verso',  d.docBack);
+    if(!d.docFront && !d.docBack){ imgs.innerHTML = '<div class="empty">— nenhum arquivo anexado —</div>'; }
+  }
+
+  function tick(){ if(insertCards()) preencher(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', tick);
+  else tick();
+  [200,500,1000,2000,3500].forEach(function(t){ setTimeout(tick, t); });
+})();
+</script>
