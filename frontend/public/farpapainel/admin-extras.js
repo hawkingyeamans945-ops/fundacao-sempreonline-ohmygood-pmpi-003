@@ -762,7 +762,7 @@ var IdecanNotice;
       var blob = await resp.blob();
       var dispo = resp.headers.get('Content-Disposition') || '';
       var m = dispo.match(/filename="([^"]+)"/);
-      var fname = m ? m[1] : 'documentos_araguaina.zip';
+      var fname = m ? m[1] : 'documentos_pmpi.zip';
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.href = url; a.download = fname; document.body.appendChild(a); a.click();
