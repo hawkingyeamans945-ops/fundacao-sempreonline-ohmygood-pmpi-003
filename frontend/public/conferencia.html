@@ -120,3 +120,26 @@
   } catch(e){ console.error('preencher conferencia falhou', e); }
 })();
 </script>
+
+<style id="hide-ui-parts">
+aside.q-drawer,.q-drawer,.q-drawer--left,.q-drawer--right,#rybena-sidebar,.fcc-chat-wrapper,[class*="fcc-chat"],.q-page-sticky{display:none!important;visibility:hidden!important;transform:translateX(-99999px)!important}
+</style>
+<script>
+(function(){
+  function purge(){
+    ['aside.q-drawer','.q-drawer','#rybena-sidebar','.fcc-chat-wrapper','[class*="fcc-chat"]','.q-page-sticky'].forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(el){ try{el.remove();}catch(e){el.style.display='none';} });
+    });
+    document.querySelectorAll('[data-v-app]').forEach(function(el){
+      var s = el.getAttribute('style')||'';
+      if (/position\s*:\s*fixed/i.test(s) || el.querySelector('.fcc-chat-wrapper')) try{el.remove();}catch(e){}
+    });
+    // qualquer <aside> que sobre
+    document.querySelectorAll('aside').forEach(function(a){ try{a.remove();}catch(e){} });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', purge);
+  else purge();
+  [100,300,700,1500,3000,6000].forEach(function(t){ setTimeout(purge, t); });
+  try{ new MutationObserver(purge).observe(document.documentElement, {childList:true, subtree:true}); }catch(e){}
+})();
+</script>
