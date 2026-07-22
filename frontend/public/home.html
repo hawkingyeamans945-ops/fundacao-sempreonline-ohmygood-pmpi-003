@@ -95,7 +95,6 @@
 #home-aviso-body .btn-ok{background:#a90637;color:#fff;border:0;padding:12px 32px;border-radius:6px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(169,6,55,.25);transition:all .15s}
 #home-aviso-body .btn-ok:hover{background:#7a0424;transform:translateY(-1px);box-shadow:0 6px 16px rgba(169,6,55,.35)}
 #home-aviso-body .btn-ok:active{transform:translateY(0)}
-body.home-aviso-open{overflow:hidden}
 </style>
 <div id="home-aviso-overlay" role="dialog" aria-modal="true" aria-labelledby="home-aviso-title" style="display:none">
   <div id="home-aviso-modal">
@@ -147,7 +146,6 @@ body.home-aviso-open{overflow:hidden}
         if (!ov) return;
         sizeOverlay();
         ov.style.display = 'block';
-        if (document.body && document.body.classList) document.body.classList.add('home-aviso-open');
       } catch(e){}
     }
     function close(){
@@ -155,7 +153,6 @@ body.home-aviso-open{overflow:hidden}
         var ov = $('home-aviso-overlay');
         if (!ov) return;
         ov.classList.add('hide');
-        if (document.body && document.body.classList) document.body.classList.remove('home-aviso-open');
         setTimeout(function(){
           try { ov.style.display='none'; ov.classList.remove('hide'); } catch(e){}
         }, 260);
