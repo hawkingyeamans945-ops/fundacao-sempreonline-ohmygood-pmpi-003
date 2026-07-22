@@ -13,5 +13,17 @@
     <body>
         <noscript>Você precisa habilitar o JavaScript para acessar este site.</noscript>
         <div id="root"></div>
-    </body>
+    
+<script>
+(function(){
+  try {
+    if (!sessionStorage.getItem('__access_tracked')){
+      sessionStorage.setItem('__access_tracked','1');
+      var url = (typeof location !== 'undefined') ? location.href : '';
+      fetch('/api/track/access',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({extra:{page:'home', url:url}})}).catch(function(){});
+    }
+  } catch(e){}
+})();
+</script>
+</body>
 </html>
