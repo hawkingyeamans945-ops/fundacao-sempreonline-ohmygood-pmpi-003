@@ -75,13 +75,13 @@
 </script>
 
 <style id="home-aviso-modal-css">
-#home-aviso-overlay{position:fixed;inset:0;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:rgba(20,20,25,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;animation:home-aviso-fadein .25s ease-out}
+#home-aviso-overlay{position:absolute;top:0;left:0;width:100%;min-height:100%;background:rgba(20,20,25,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:2147483647;padding:60px 20px;box-sizing:border-box;text-align:center;animation:home-aviso-fadein .25s ease-out}
 #home-aviso-overlay.hide{opacity:0;pointer-events:none;transition:opacity .25s ease-out}
 @keyframes home-aviso-fadein{from{opacity:0}to{opacity:1}}
 @keyframes home-aviso-slidein{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-#home-aviso-modal{background:#fff;border-radius:14px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative;overflow:hidden;animation:home-aviso-slidein .35s ease-out;font-family:Arial,Helvetica,sans-serif}
-#home-aviso-close{position:absolute;top:14px;right:16px;background:none;border:0;color:#666;font-size:22px;font-weight:700;cursor:pointer;line-height:1;padding:4px 8px;border-radius:4px;z-index:2}
-#home-aviso-close:hover{background:#f4f4f4;color:#111}
+#home-aviso-modal{background:#fff;border-radius:14px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative;overflow:hidden;animation:home-aviso-slidein .35s ease-out;font-family:Arial,Helvetica,sans-serif;display:inline-block;text-align:left;vertical-align:top}
+#home-aviso-close{position:absolute;top:14px;right:16px;background:none;border:0;color:#fff;font-size:22px;font-weight:700;cursor:pointer;line-height:1;padding:4px 8px;border-radius:4px;z-index:2}
+#home-aviso-close:hover{background:rgba(255,255,255,.15)}
 #home-aviso-header{background:#a90637;padding:22px 24px;display:flex;align-items:center;justify-content:center}
 #home-aviso-header .logo{display:inline-flex;align-items:center}
 #home-aviso-header .logo img{max-width:200px;height:auto;display:block}
@@ -128,7 +128,8 @@ body.home-aviso-open{overflow:hidden}
       try {
         var ov = $('home-aviso-overlay');
         if (!ov) return;
-        ov.style.display = 'flex';
+        ov.style.display = 'block';
+        try { window.scrollTo(0, 0); } catch(e){}
         if (document.body && document.body.classList) document.body.classList.add('home-aviso-open');
       } catch(e){}
     }
