@@ -1,0 +1,31 @@
+{
+  "summary": "Retest da /inscricao.html após correções de layout da Seção 1 - Dados Pessoais. Todos os pontos falhos da iteração 12 foram corrigidos e verificados.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Seção 1 Dados Pessoais - Data de Nascimento", "issues": ["Campo Data de Nascimento usa <input type='date'> nativo (placeholder 'mm/dd/yyyy'), portanto o navegador exibe o date picker padrão em vez de um calendário estilizado (ex: shadcn). Já reportado em iterações anteriores; não bloqueia a correção de layout."]}
+    ]
+  },
+  "test_report_links": ["/app/test_reports/iteration_13.json"],
+  "action_items": [
+    "Nenhum item bloqueante. Layout da Seção 1 - Dados Pessoais está conforme especificação.",
+    "Opcional: substituir <input type='date'> por um componente de calendário próprio (Quasar/shadcn) para consistência visual entre navegadores."
+  ],
+  "critical_code_review_comments": [
+    "Fix aplicado corretamente: <style id='layout-fix'> foi injetada antes de <body> com regras dedicadas .row>.col-md-{1,5,6,7,8,10,11} usando !important — 674 chars carregados, styleSheet válida com 7 seletores.",
+    "Função ajustarLayoutDadosPessoais() reescrita: sobe na árvore DOM até achar o ancestor filho direto de .row e aplica 'col-12 col-md-X' nele. Trata corretamente o caso do Gênero, envolto em wrapper <div> extra (targetTag=DIV, isTargetLabel=False, class='col-12 col-md-3').",
+    "Selects populados corretamente após transformarSelects async: Gênero=5, Estado Civil=7, País=199, Estado nasceu=28, Tipo endereço=4, Escolaridade (label 'Maior grau de escolaridade')=8, Tipo telefone=3.",
+    "Naturalidade continua com apenas 1 opção vazia por depender de país selecionado (comportamento esperado).",
+    "Regressão preservada: nenhum input/label 'Confirme o CPF' ou 'Confirme o e-mail'; nenhum botão 'Adicionar' visível."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "100%"},
+  "test_credentials": "n/a",
+  "seed_data_creation": "nenhum seed data criado",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Todas as larguras solicitadas foram medidas em viewport 1440x900 após ~4.5s de espera pós-load. Resultados (offsetWidth do target-ancestor filho direto de .row, %-relative ao .row parent): CPF 33.30% (col-md-4, target=LABEL), NOME COMPLETO 66.70% (col-md-8, target=LABEL, mesma row do CPF), Data de Nascimento 25.05% (col-md-3, target=LABEL), Gênero 25.05% (col-md-3, target=DIV wrapper — confirma que o novo script trata wrapper extra), Estado Civil 25.05% (col-md-3, target=LABEL), Em que país você nasceu? 25.05% (col-md-3, target=LABEL), Nome da Mãe 50.00% (col-md-6, target=LABEL). Todos dentro da tolerância ~0.05pp.",
+  "rca of the issue": "Iteração 12 falhou porque (a) a tag <style id='layout-fix'> não estava presente no HTML servido, então as classes col-md-X aplicadas via JS ficavam sujeitas a overrides do Quasar/Bootstrap; (b) o script anterior só considerava lbl.parentNode, mas o campo Gênero está dentro de um <div> wrapper extra entre .row e <label>, então o script aplicava as classes no <label> em vez do wrapper filho direto de .row. Nesta iteração ambos foram corrigidos: a tag <style id='layout-fix'> agora é injetada com regras !important dedicadas, e o script agora sobe a árvore DOM até o ancestor filho direto de .row. Confirmado experimentalmente: Gênero target agora é <div class='col-12 col-md-3'> com offsetWidth 241px = 25.05% de .row (962px)."
+}
